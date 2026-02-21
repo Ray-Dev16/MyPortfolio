@@ -1,5 +1,5 @@
 import { Head, Link, usePage } from '@inertiajs/react';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import {
     MapPin,
     Calendar,
@@ -128,6 +128,19 @@ export default function Welcome({
     const { resolvedAppearance, updateAppearance } = useAppearance();
     const [recIndex, setRecIndex] = useState(0);
     const [showScrollTop, setShowScrollTop] = useState(false);
+    const [projectImageErrors, setProjectImageErrors] = useState<Set<number>>(new Set());
+    const hideProjectImage = (id: number) => setProjectImageErrors((prev) => new Set(prev).add(id));
+    // After mount, scroll to the hash (e.g. #projects) so refresh with hash shows the right section
+    useEffect(() => {
+        const hash = typeof window !== 'undefined' ? window.location.hash : '';
+        if (!hash) return;
+        const id = hash.slice(1);
+        const timer = setTimeout(() => {
+            const el = id ? document.getElementById(id) : null;
+            if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 100);
+        return () => clearTimeout(timer);
+    }, []);
 
     useEffect(() => {
         const onScroll = () => setShowScrollTop(window.scrollY > 400);
@@ -168,6 +181,19 @@ export default function Welcome({
                         )}
                     </nav>
                 </header>
+
+                {(!portfolio || typeof portfolio !== 'object') && (
+                    <div className="bg-amber-100 dark:bg-amber-900/30 text-amber-900 dark:text-amber-200 px-4 py-2 text-center text-sm">
+                        Portfolio didn&apos;t load.{' '}
+                        <button
+                            type="button"
+                            onClick={() => window.location.reload()}
+                            className="underline font-medium hover:no-underline"
+                        >
+                            Reload page
+                        </button>
+                    </div>
+                )}
 
                 <main className="mx-auto max-w-5xl px-4 py-8 lg:px-8 lg:py-12">
                     {/* Profile header */}
@@ -236,8 +262,8 @@ export default function Welcome({
                         </div>
                     </section>
 
-                    {/* Two-column: About + Education | Experience + Projects */}
-                    <section className="grid gap-6 lg:grid-cols-2 lg:gap-8">
+                    {/* About Me — full width */}
+                    <section>
                         <Card className="overflow-hidden rounded-xl border-[#19140014] bg-white shadow-sm dark:border-[#3E3E3A] dark:bg-[#161615]">
                             <CardHeader className="flex flex-row items-center gap-2 pb-2">
                                 <Info className="size-5 text-[#706f6c] dark:text-[#A1A09A]" />
@@ -249,106 +275,52 @@ export default function Welcome({
                                 </p>
                             </CardContent>
                         </Card>
-
-                        <Card className="overflow-hidden rounded-xl border-[#19140014] bg-white shadow-sm dark:border-[#3E3E3A] dark:bg-[#161615]">
-                            <CardHeader className="flex flex-row items-center gap-2 pb-2">
-                                <Briefcase className="size-5 text-[#706f6c] dark:text-[#A1A09A]" />
-                                <CardTitle className="text-base font-semibold">Experience</CardTitle>
-                            </CardHeader>
-                            <CardContent className="pt-0">
-                                <ul className="space-y-2 text-sm text-[#1b1b18] dark:text-[#EDEDEC]">
-                                    {experiences.map((e) => (
-                                        <li key={e.id}>
-                                            <span className="font-medium">{e.title}</span>
-                                            {e.company && ` (${e.company})`} — {e.period}
-                                        </li>
-                                    ))}
-                                </ul>
-                            </CardContent>
-                        </Card>
-
-                        <Card className="overflow-hidden rounded-xl border-[#19140014] bg-white shadow-sm dark:border-[#3E3E3A] dark:bg-[#161615]">
-                            <CardHeader className="flex flex-row items-center gap-2 pb-2">
-                                <GraduationCap className="size-5 text-[#706f6c] dark:text-[#A1A09A]" />
-                                <CardTitle className="text-base font-semibold">Education</CardTitle>
-                            </CardHeader>
-                            <CardContent className="space-y-4 pt-0">
-                                {education.elementary && (education.elementary.school || education.elementary.period) && (
-                                    <div>
-                                        <p className="text-xs font-medium uppercase tracking-wider text-[#706f6c] dark:text-[#A1A09A]">Elementary</p>
-                                        <p className="font-medium text-[#1b1b18] dark:text-[#EDEDEC]">{education.elementary.school}</p>
-                                        {education.elementary.period && <p className="text-sm text-[#706f6c] dark:text-[#A1A09A]">{education.elementary.period}</p>}
-                                    </div>
-                                )}
-                                {education.high_school && (education.high_school.school || education.high_school.period) && (
-                                    <div>
-                                        <p className="text-xs font-medium uppercase tracking-wider text-[#706f6c] dark:text-[#A1A09A]">High School</p>
-                                        <p className="font-medium text-[#1b1b18] dark:text-[#EDEDEC]">{education.high_school.school}</p>
-                                        {education.high_school.period && <p className="text-sm text-[#706f6c] dark:text-[#A1A09A]">{education.high_school.period}</p>}
-                                    </div>
-                                )}
-                                {education.senior_high && (education.senior_high.school || education.senior_high.period || education.senior_high.strand) && (
-                                    <div>
-                                        <p className="text-xs font-medium uppercase tracking-wider text-[#706f6c] dark:text-[#A1A09A]">Senior High School</p>
-                                        <p className="font-medium text-[#1b1b18] dark:text-[#EDEDEC]">{education.senior_high.school}</p>
-                                        {education.senior_high.strand && <p className="text-sm text-[#1b1b18] dark:text-[#EDEDEC]">{education.senior_high.strand}</p>}
-                                        {education.senior_high.period && <p className="text-sm text-[#706f6c] dark:text-[#A1A09A]">{education.senior_high.period}</p>}
-                                    </div>
-                                )}
-                                {education.college && (education.college.degree || education.college.institution || education.college.period) && (
-                                    <div>
-                                        <p className="text-xs font-medium uppercase tracking-wider text-[#706f6c] dark:text-[#A1A09A]">College</p>
-                                        <p className="font-medium text-[#1b1b18] dark:text-[#EDEDEC]">{education.college.degree}</p>
-                                        <p className="text-sm text-[#706f6c] dark:text-[#A1A09A]">{education.college.institution}</p>
-                                        {education.college.strand && <p className="text-sm text-[#1b1b18] dark:text-[#EDEDEC]">{education.college.strand}</p>}
-                                        {education.college.period && <p className="text-sm text-[#706f6c] dark:text-[#A1A09A]">{education.college.period}</p>}
-                                    </div>
-                                )}
-                            </CardContent>
-                        </Card>
-
-                        <Card className="overflow-hidden rounded-xl border-[#19140014] bg-white shadow-sm dark:border-[#3E3E3A] dark:bg-[#161615]">
-                            <CardHeader className="flex flex-row items-center justify-between pb-2">
-                                <CardTitle className="flex items-center gap-2 text-base font-semibold">
-                                    <LayoutGrid className="size-5 text-[#706f6c] dark:text-[#A1A09A]" />
-                                    Projects
-                                </CardTitle>
-                                <Link
-                                    href="#projects"
-                                    className="text-sm font-medium text-[#706f6c] hover:text-[#1b1b18] dark:text-[#A1A09A] dark:hover:text-[#EDEDEC]"
-                                >
-                                    View All <ChevronRight className="inline size-4" />
-                                </Link>
-                            </CardHeader>
-                            <CardContent className="pt-0">
-                                <div className="grid gap-4 sm:grid-cols-2">
-                                    {projects.slice(0, 2).map((proj) => (
-                                        <a
-                                            key={proj.id}
-                                            href={proj.href}
-                                            target={proj.href.startsWith('http') ? '_blank' : undefined}
-                                            rel={proj.href.startsWith('http') ? 'noopener noreferrer' : undefined}
-                                            className="group rounded-lg border border-[#19140014] bg-[#FDFDFC] p-3 transition hover:border-[#19140035] dark:border-[#3E3E3A] dark:bg-[#0a0a0a] dark:hover:border-[#62605b]"
-                                        >
-                                            <p className="font-medium text-[#1b1b18] group-hover:underline dark:text-[#EDEDEC]">
-                                                {proj.title}
-                                            </p>
-                                            <p className="mt-1 text-xs text-[#706f6c] dark:text-[#A1A09A]">
-                                                {proj.description}
-                                            </p>
-                                            <span className="mt-2 inline-block rounded-full bg-[#e8e8e6] px-2 py-0.5 text-xs dark:bg-[#262625]">
-                                                {proj.action}
-                                            </span>
-                                        </a>
-                                    ))}
-                                </div>
-                            </CardContent>
-                        </Card>
                     </section>
 
-                    {/* Tech Stack + Certifications | Projects grid + Recommendations */}
+                    {/* Left: Education, Tech Stack, Certifications | Right: Experience, Projects (2nd picture layout) */}
                     <section className="mt-10 grid gap-6 lg:grid-cols-[1fr_1.4fr] lg:gap-8">
                         <div className="flex flex-col gap-6">
+                            {/* Education — compact card like 2nd picture */}
+                            <Card className="overflow-hidden rounded-xl border-[#19140014] bg-white shadow-sm dark:border-[#3E3E3A] dark:bg-[#161615]">
+                                <CardHeader className="flex flex-row items-center gap-2 pb-2">
+                                    <GraduationCap className="size-5 text-[#706f6c] dark:text-[#A1A09A]" />
+                                    <CardTitle className="text-base font-semibold">Education</CardTitle>
+                                </CardHeader>
+                                <CardContent className="space-y-5 pt-0">
+                                    {education.elementary && (education.elementary.school || education.elementary.period) && (
+                                        <div className="space-y-0.5">
+                                            <p className="text-xs font-medium uppercase tracking-wider text-[#706f6c] dark:text-[#A1A09A]">Elementary</p>
+                                            <p className="font-medium text-[#1b1b18] dark:text-[#EDEDEC]">{education.elementary.school}</p>
+                                            {education.elementary.period && <p className="text-sm text-[#706f6c] dark:text-[#A1A09A]">{education.elementary.period}</p>}
+                                        </div>
+                                    )}
+                                    {education.high_school && (education.high_school.school || education.high_school.period) && (
+                                        <div className="space-y-0.5">
+                                            <p className="text-xs font-medium uppercase tracking-wider text-[#706f6c] dark:text-[#A1A09A]">High School</p>
+                                            <p className="font-medium text-[#1b1b18] dark:text-[#EDEDEC]">{education.high_school.school}</p>
+                                            {education.high_school.period && <p className="text-sm text-[#706f6c] dark:text-[#A1A09A]">{education.high_school.period}</p>}
+                                        </div>
+                                    )}
+                                    {education.senior_high && (education.senior_high.school || education.senior_high.period || education.senior_high.strand) && (
+                                        <div className="space-y-0.5">
+                                            <p className="text-xs font-medium uppercase tracking-wider text-[#706f6c] dark:text-[#A1A09A]">Senior High School</p>
+                                            <p className="font-medium text-[#1b1b18] dark:text-[#EDEDEC]">{education.senior_high.school}</p>
+                                            {education.senior_high.strand && <p className="text-sm text-[#1b1b18] dark:text-[#EDEDEC]">{education.senior_high.strand}</p>}
+                                            {education.senior_high.period && <p className="text-sm text-[#706f6c] dark:text-[#A1A09A]">{education.senior_high.period}</p>}
+                                        </div>
+                                    )}
+                                    {education.college && (education.college.degree || education.college.institution || education.college.period) && (
+                                        <div className="space-y-0.5">
+                                            <p className="text-xs font-medium uppercase tracking-wider text-[#706f6c] dark:text-[#A1A09A]">College</p>
+                                            <p className="font-medium text-[#1b1b18] dark:text-[#EDEDEC]">{education.college.degree}</p>
+                                            <p className="text-sm text-[#706f6c] dark:text-[#A1A09A]">{education.college.institution}</p>
+                                            {education.college.strand && <p className="text-sm text-[#1b1b18] dark:text-[#EDEDEC]">{education.college.strand}</p>}
+                                            {education.college.period && <p className="text-sm text-[#706f6c] dark:text-[#A1A09A]">{education.college.period}</p>}
+                                        </div>
+                                    )}
+                                </CardContent>
+                            </Card>
+
                             <Card className="overflow-hidden rounded-xl border-[#19140014] bg-white shadow-sm dark:border-[#3E3E3A] dark:bg-[#161615]">
                                 <CardHeader className="flex flex-row items-center justify-between pb-2">
                                     <CardTitle className="flex items-center gap-2 text-base font-semibold">
@@ -444,6 +416,27 @@ export default function Welcome({
                         </div>
 
                         <div className="flex flex-col gap-6">
+                            <Card className="overflow-hidden rounded-xl border-[#19140014] bg-white shadow-sm dark:border-[#3E3E3A] dark:bg-[#161615]">
+                                <CardHeader className="flex flex-row items-center gap-2 pb-2">
+                                    <Briefcase className="size-5 text-[#706f6c] dark:text-[#A1A09A]" />
+                                    <CardTitle className="text-base font-semibold">Experience</CardTitle>
+                                </CardHeader>
+                                <CardContent className="pt-0">
+                                    <ul className="space-y-2 text-sm text-[#1b1b18] dark:text-[#EDEDEC]">
+                                        {experiences.map((e) => (
+                                            <li key={e.id} className="flex flex-wrap items-baseline justify-between gap-2">
+                                                <span>
+                                                    <span className="text-[#706f6c] dark:text-[#A1A09A]">• </span>
+                                                    <span className="font-medium">{e.title}</span>
+                                                    {e.company && <span className="text-[#706f6c] dark:text-[#A1A09A]"> — {e.company}</span>}
+                                                </span>
+                                                <span className="text-[#706f6c] dark:text-[#A1A09A] shrink-0">{e.period}</span>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </CardContent>
+                            </Card>
+
                             <Card id="projects" className="overflow-hidden rounded-xl border-[#19140014] bg-white shadow-sm dark:border-[#3E3E3A] dark:bg-[#161615]">
                                 <CardHeader className="flex flex-row items-center justify-between pb-2">
                                     <CardTitle className="flex items-center gap-2 text-base font-semibold">
@@ -464,13 +457,18 @@ export default function Welcome({
                                                 rel={proj.href.startsWith('http') ? 'noopener noreferrer' : undefined}
                                                 className="group overflow-hidden rounded-xl border border-[#19140014] bg-[#FDFDFC] shadow-sm transition hover:border-[#19140035] dark:border-[#3E3E3A] dark:bg-[#0a0a0a] dark:hover:border-[#62605b]"
                                             >
-                                                <div className="aspect-video bg-[#e8e8e6] dark:bg-[#262625]">
-                                                    {proj.image && (
+                                                <div className="relative aspect-video bg-[#e8e8e6] dark:bg-[#262625]">
+                                                    {proj.image && !projectImageErrors.has(proj.id) ? (
                                                         <img
                                                             src={proj.image}
                                                             alt=""
                                                             className="size-full object-cover"
+                                                            onError={() => hideProjectImage(proj.id)}
                                                         />
+                                                    ) : (
+                                                        <div className="flex size-full items-center justify-center">
+                                                            <LayoutGrid className="size-12 text-[#a1a09a] dark:text-[#706f6c]" />
+                                                        </div>
                                                     )}
                                                 </div>
                                                 <div className="p-3">

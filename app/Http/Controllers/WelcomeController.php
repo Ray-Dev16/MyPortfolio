@@ -10,6 +10,7 @@ use App\Models\PortfolioRecommendation;
 use App\Models\PortfolioSection;
 use App\Models\PortfolioSkill;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Laravel\Fortify\Features;
 
@@ -78,7 +79,7 @@ class WelcomeController extends Controller
                     'description' => $p->description,
                     'action' => $p->action_label ?? $p->url,
                     'href' => $p->url ?? '#',
-                    'image' => $p->image_path ? asset('storage/'.$p->image_path) : null,
+                    'image' => $p->image_path ? Storage::disk('public')->url($p->image_path) : null,
                 ])->values()->all(),
                 'certifications' => PortfolioCertification::all()->map(fn ($c) => [
                     'id' => $c->id,
