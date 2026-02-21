@@ -1,6 +1,6 @@
 import { Head, Link, useForm, usePage } from '@inertiajs/react';
-import { useState } from 'react';
-import { Pencil, Trash2 } from 'lucide-react';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { Pencil, Trash2, ImagePlus } from 'lucide-react';
 import AppLayout from '@/layouts/app-layout';
 import type { BreadcrumbItem } from '@/types';
 import { Button } from '@/components/ui/button';
@@ -19,6 +19,8 @@ type Certification = {
     name: string;
     issuer: string;
     year: string | null;
+    image_path: string | null;
+    image_url: string | null;
     sort_order: number;
 };
 
@@ -30,9 +32,30 @@ export default function PortfolioCertifications({
     const status = (usePage().props.flash as { status?: string } | undefined)?.status;
     const [editingId, setEditingId] = useState<number | null>(null);
     const [newOpen, setNewOpen] = useState(false);
+    const addFileRef = useRef<HTMLInputElement>(null);
+    const editFileRef = useRef<HTMLInputElement>(null);
 
-    const addForm = useForm({ name: '', issuer: '', year: '' });
-    const editForm = useForm({ name: '', issuer: '', year: '' });
+    const addForm = useForm({ name: '', issuer: '', year: '', image: null as File | null });
+    const editForm = useForm({
+        name: '',
+        issuer: '',
+        year: '',
+        image: null as File | null,
+        _method: undefined as string | undefined,
+    });
+
+    const addPreview = useMemo(
+        () => (addForm.data.image ? URL.createObjectURL(addForm.data.image) : null),
+        [addForm.data.image],
+    );
+    const editPreview = useMemo(
+        () => (editForm.data.image ? URL.createObjectURL(editForm.data.image) : null),
+        [editForm.data.image],
+    );
+    useEffect(() => () => {
+        if (addPreview) URL.revokeObjectURL(addPreview);
+        if (editPreview) URL.revokeObjectURL(editPreview);
+    }, [addPreview, editPreview]);
 
     const startEdit = (c: Certification) => {
         setEditingId(c.id);
@@ -40,6 +63,8 @@ export default function PortfolioCertifications({
             name: c.name,
             issuer: c.issuer,
             year: c.year ?? '',
+            image: null,
+            _method: undefined,
         });
     };
 
@@ -69,14 +94,52 @@ export default function PortfolioCertifications({
                                 onSubmit={(e) => {
                                     e.preventDefault();
                                     addForm.post('/dashboard/portfolio/certifications', {
+                                        forceFormData: true,
                                         onSuccess: () => {
                                             addForm.reset();
+                                            addForm.setData('image', null);
                                             setNewOpen(false);
                                         },
                                     });
                                 }}
                                 className="space-y-4"
                             >
+                                <div className="grid gap-2">
+                                    <Label>Image (badge / certificate)</Label>
+                                    <input
+                                        ref={addFileRef}
+                                        type="file"
+                                        accept="image/jpeg,image/png,image/webp,image/gif"
+                                        className="hidden"
+                                        onChange={(e) => {
+                                            const file = e.target.files?.[0];
+                                            if (file) addForm.setData('image', file);
+                                        }}
+                                    />
+                                    <div className="flex items-center gap-4">
+                                        <div className="flex size-20 shrink-0 overflow-hidden rounded-lg border bg-muted">
+                                            {addPreview ? (
+                                                <img src={addPreview} alt="" className="size-full object-cover" />
+                                            ) : (
+                                                <div className="flex size-full items-center justify-center">
+                                                    <ImagePlus className="size-8 text-muted-foreground" />
+                                                </div>
+                                            )}
+                                        </div>
+                                        <div className="flex gap-2">
+                                            <Button type="button" variant="outline" size="sm" onClick={() => addFileRef.current?.click()}>
+                                                Choose image
+                                            </Button>
+                                            {addForm.data.image && (
+                                                <Button type="button" variant="ghost" size="sm" onClick={() => addForm.setData('image', null)}>
+                                                    Remove
+                                                </Button>
+                                            )}
+                                        </div>
+                                    </div>
+                                    <p className="text-xs text-muted-foreground">JPEG, PNG, WebP or GIF. Max 2MB.</p>
+                                    <InputError message={addForm.errors.image} />
+                                </div>
                                 <div className="grid gap-2">
                                     <Label>Name</Label>
                                     <Input
@@ -118,19 +181,66 @@ export default function PortfolioCertifications({
                                     <form
                                         onSubmit={(ev) => {
                                             ev.preventDefault();
-                                            editForm.put(
-                                                `/dashboard/portfolio/certifications/${c.id}`,
-                                                { onSuccess: () => setEditingId(null) },
-                                            );
+                                            if (editForm.data.image instanceof File) {
+                                                editForm.setData('_method', 'put');
+                                                editForm.post(`/dashboard/portfolio/certifications/${c.id}`, {
+                                                    forceFormData: true,
+                                                    onSuccess: () => {
+                                                        setEditingId(null);
+                                                        editForm.setData({ image: null, _method: undefined });
+                                                    },
+                                                });
+                                            } else {
+                                                editForm.put(`/dashboard/portfolio/certifications/${c.id}`, {
+                                                    onSuccess: () => setEditingId(null),
+                                                });
+                                            }
                                         }}
                                         className="space-y-4"
                                     >
                                         <div className="grid gap-2">
+                                            <Label>Image (badge / certificate)</Label>
+                                            <input
+                                                ref={editFileRef}
+                                                type="file"
+                                                accept="image/jpeg,image/png,image/webp,image/gif"
+                                                className="hidden"
+                                                onChange={(e) => {
+                                                    const file = e.target.files?.[0];
+                                                    if (file) editForm.setData('image', file);
+                                                }}
+                                            />
+                                            <div className="flex items-center gap-4">
+                                                <div className="flex size-20 shrink-0 overflow-hidden rounded-lg border bg-muted">
+                                                    {editPreview ? (
+                                                        <img src={editPreview} alt="" className="size-full object-cover" />
+                                                    ) : c.image_url ? (
+                                                        <img src={c.image_url} alt="" className="size-full object-cover" />
+                                                    ) : (
+                                                        <div className="flex size-full items-center justify-center">
+                                                            <ImagePlus className="size-8 text-muted-foreground" />
+                                                        </div>
+                                                    )}
+                                                </div>
+                                                <div className="flex gap-2">
+                                                    <Button type="button" variant="outline" size="sm" onClick={() => editFileRef.current?.click()}>
+                                                        Change image
+                                                    </Button>
+                                                    {editForm.data.image && (
+                                                        <Button type="button" variant="ghost" size="sm" onClick={() => editForm.setData('image', null)}>
+                                                            Cancel change
+                                                        </Button>
+                                                    )}
+                                                </div>
+                                            </div>
+                                            <p className="text-xs text-muted-foreground">JPEG, PNG, WebP or GIF. Max 2MB.</p>
+                                            <InputError message={editForm.errors.image} />
+                                        </div>
+                                        <div className="grid gap-2">
                                             <Label>Name</Label>
                                             <Input
                                                 value={editForm.data.name}
-                                                onChange={(ev) =>
-                                                    editForm.setData('name', ev.target.value)}
+                                                onChange={(ev) => editForm.setData('name', ev.target.value)}
                                                 required
                                             />
                                             <InputError message={editForm.errors.name} />
@@ -139,8 +249,7 @@ export default function PortfolioCertifications({
                                             <Label>Issuer</Label>
                                             <Input
                                                 value={editForm.data.issuer}
-                                                onChange={(ev) =>
-                                                    editForm.setData('issuer', ev.target.value)}
+                                                onChange={(ev) => editForm.setData('issuer', ev.target.value)}
                                             />
                                             <InputError message={editForm.errors.issuer} />
                                         </div>
@@ -148,8 +257,7 @@ export default function PortfolioCertifications({
                                             <Label>Year</Label>
                                             <Input
                                                 value={editForm.data.year}
-                                                onChange={(ev) =>
-                                                    editForm.setData('year', ev.target.value)}
+                                                onChange={(ev) => editForm.setData('year', ev.target.value)}
                                             />
                                             <InputError message={editForm.errors.year} />
                                         </div>
@@ -168,13 +276,20 @@ export default function PortfolioCertifications({
                                     </form>
                                 ) : (
                                     <div className="flex items-start justify-between gap-4">
-                                        <div>
-                                            <p className="font-medium">{c.name}</p>
-                                            <p className="text-sm text-muted-foreground">
-                                                {c.issuer} {c.year ? `• ${c.year}` : ''}
-                                            </p>
+                                        <div className="flex min-w-0 flex-1 items-center gap-4">
+                                            {c.image_url ? (
+                                                <div className="size-12 shrink-0 overflow-hidden rounded-lg border bg-muted">
+                                                    <img src={c.image_url} alt="" className="size-full object-cover" />
+                                                </div>
+                                            ) : null}
+                                            <div className="min-w-0">
+                                                <p className="font-medium">{c.name}</p>
+                                                <p className="text-sm text-muted-foreground">
+                                                    {c.issuer} {c.year ? `• ${c.year}` : ''}
+                                                </p>
+                                            </div>
                                         </div>
-                                        <div className="flex gap-2">
+                                        <div className="flex shrink-0 gap-2">
                                             <Button
                                                 size="icon"
                                                 variant="ghost"

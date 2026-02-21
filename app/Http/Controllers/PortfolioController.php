@@ -307,6 +307,8 @@ class PortfolioController extends Controller
                 'name' => $c->name,
                 'issuer' => $c->issuer,
                 'year' => $c->year,
+                'image_path' => $c->image_path,
+                'image_url' => $c->image_path ? asset('storage/'.$c->image_path) : null,
                 'sort_order' => $c->sort_order,
             ])->values()->all(),
         ]);
@@ -318,8 +320,13 @@ class PortfolioController extends Controller
             'name' => 'required|string|max:255',
             'issuer' => 'nullable|string|max:255',
             'year' => 'nullable|string|max:20',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,webp,gif|max:2048',
         ]);
         $validated['sort_order'] = PortfolioCertification::max('sort_order') + 1;
+        if ($request->hasFile('image')) {
+            $validated['image_path'] = $request->file('image')->store('portfolio/certifications', 'public');
+        }
+        unset($validated['image']);
         PortfolioCertification::create($validated);
 
         return back()->with('status', 'Certification added.');
@@ -332,7 +339,15 @@ class PortfolioController extends Controller
             'name' => 'required|string|max:255',
             'issuer' => 'nullable|string|max:255',
             'year' => 'nullable|string|max:20',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,webp,gif|max:2048',
         ]);
+        if ($request->hasFile('image')) {
+            if ($model->image_path && Storage::disk('public')->exists($model->image_path)) {
+                Storage::disk('public')->delete($model->image_path);
+            }
+            $validated['image_path'] = $request->file('image')->store('portfolio/certifications', 'public');
+        }
+        unset($validated['image']);
         $model->update($validated);
 
         return back()->with('status', 'Certification updated.');

@@ -27,12 +27,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
         Route::get('projects', [PortfolioController::class, 'projectsIndex'])->name('projects.index');
         Route::post('projects', [PortfolioController::class, 'projectsStore'])->name('projects.store');
-        Route::put('projects/{project}', [PortfolioController::class, 'projectsUpdate'])->name('projects.update');
+        Route::match(['put', 'post'], 'projects/{project}', [PortfolioController::class, 'projectsUpdate'])->name('projects.update');
         Route::delete('projects/{project}', [PortfolioController::class, 'projectsDestroy'])->name('projects.destroy');
 
         Route::get('certifications', [PortfolioController::class, 'certificationsIndex'])->name('certifications.index');
         Route::post('certifications', [PortfolioController::class, 'certificationsStore'])->name('certifications.store');
-        Route::put('certifications/{certification}', [PortfolioController::class, 'certificationsUpdate'])->name('certifications.update');
+        Route::match(['put', 'post'], 'certifications/{certification}', [PortfolioController::class, 'certificationsUpdate'])->name('certifications.update');
         Route::delete('certifications/{certification}', [PortfolioController::class, 'certificationsDestroy'])->name('certifications.destroy');
 
         Route::get('recommendations', [PortfolioController::class, 'recommendationsIndex'])->name('recommendations.index');

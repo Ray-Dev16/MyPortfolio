@@ -51,7 +51,7 @@ type PortfolioEducation = {
 };
 type PortfolioExperience = { id: number; title: string; company: string; period: string };
 type PortfolioProject = { id: number; title: string; description: string; action: string; href: string; image: string | null };
-type PortfolioCert = { id: number; name: string; issuer: string; year: string };
+type PortfolioCert = { id: number; name: string; issuer: string; year: string; image: string | null };
 type PortfolioRec = { id: number; quote: string; author: string };
 type PortfolioTechStack = { frontend: string[]; backend: string[]; tools: string[] };
 
@@ -115,9 +115,9 @@ export default function Welcome({
         { id: 4, title: 'OneClique Studio', description: 'Multimedia Team - UI/UX, WordPress & SEO Optimization', action: 'onecliquestudio.com', href: 'https://onecliquestudio.com', image: null },
     ];
     const certifications = p?.certifications ?? [
-        { id: 1, name: 'Associate Data Analyst', issuer: 'DataCamp', year: '2025' },
-        { id: 2, name: 'Intermediate SQL', issuer: 'DataCamp', year: '2025' },
-        { id: 3, name: 'Intermediate Python', issuer: 'DataCamp', year: '2025' },
+        { id: 1, name: 'Associate Data Analyst', issuer: 'DataCamp', year: '2025', image: null },
+        { id: 2, name: 'Intermediate SQL', issuer: 'DataCamp', year: '2025', image: null },
+        { id: 3, name: 'Intermediate Python', issuer: 'DataCamp', year: '2025', image: null },
     ];
     const recommendations = p?.recommendations ?? [
         { id: 1, quote: '"She have a better taste design and good at details."', author: 'Roy M.' },
@@ -421,14 +421,21 @@ export default function Welcome({
                                     {certifications.map((c) => (
                                         <div
                                             key={c.id}
-                                            className="rounded-lg bg-[#e8e8e6] px-3 py-2 dark:bg-[#262625]"
+                                            className="flex items-center gap-3 rounded-lg bg-[#e8e8e6] px-3 py-2 dark:bg-[#262625]"
                                         >
-                                            <p className="font-medium text-[#1b1b18] dark:text-[#EDEDEC]">
-                                                {c.name}
-                                            </p>
-                                            <p className="text-xs text-[#706f6c] dark:text-[#A1A09A]">
-                                                {c.issuer} {c.year ? `• ${c.year}` : ''}
-                                            </p>
+                                            {c.image && (
+                                                <div className="size-10 shrink-0 overflow-hidden rounded-md bg-white dark:bg-[#1f1f1e]">
+                                                    <img src={c.image} alt="" className="size-full object-cover" />
+                                                </div>
+                                            )}
+                                            <div className="min-w-0 flex-1">
+                                                <p className="font-medium text-[#1b1b18] dark:text-[#EDEDEC]">
+                                                    {c.name}
+                                                </p>
+                                                <p className="text-xs text-[#706f6c] dark:text-[#A1A09A]">
+                                                    {c.issuer} {c.year ? `• ${c.year}` : ''}
+                                                </p>
+                                            </div>
                                         </div>
                                     ))}
                                 </CardContent>

@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class PortfolioCertification extends Model
 {
-    protected $fillable = ['name', 'issuer', 'year', 'sort_order'];
+    protected $fillable = ['name', 'issuer', 'year', 'image_path', 'sort_order'];
 
     protected static function booted(): void
     {

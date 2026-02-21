@@ -81,6 +81,7 @@ class WelcomeController extends Controller
                     'name' => $c->name,
                     'issuer' => $c->issuer,
                     'year' => $c->year,
+                    'image' => $c->image_path ? asset('storage/'.$c->image_path) : null,
                 ])->values()->all(),
                 'recommendations' => PortfolioRecommendation::all()->map(fn ($r) => [
                     'id' => $r->id,
