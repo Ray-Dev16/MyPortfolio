@@ -1,4 +1,4 @@
-import { Head, Link, usePage } from '@inertiajs/react';
+import { Head, Link } from '@inertiajs/react';
 import {
     MapPin,
     Calendar,
@@ -25,7 +25,6 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useAppearance } from '@/hooks/use-appearance';
 import { cn } from '@/lib/utils';
-import { dashboard } from '@/routes';
 
 type PortfolioProfile = {
     name: string;
@@ -81,7 +80,6 @@ export default function Welcome({
     canRegister?: boolean;
     portfolio?: Portfolio;
 }) {
-    const { auth } = usePage().props;
     // All sections (profile, about, education, experiences, projects, etc.) come from the admin via this prop
     const p = portfolio ?? (null as unknown as Portfolio);
     const profile = p?.profile ?? {
@@ -169,20 +167,6 @@ export default function Welcome({
                 )}
                 style={{ fontFamily: "'Instrument Sans', sans-serif" }}
             >
-                {/* Top bar — Dashboard link when logged in; no border since login/register removed */}
-                <header className="sticky top-0 z-30 bg-[#FDFDFC]/95 px-4 py-2.5 backdrop-blur dark:bg-[#0a0a0a]/95 lg:px-8">
-                    <nav className="mx-auto flex max-w-5xl items-center justify-end">
-                        {auth.user && (
-                            <Link
-                                href={dashboard()}
-                                className="text-sm text-[#706f6c] hover:text-[#1b1b18] dark:text-[#A1A09A] dark:hover:text-[#EDEDEC]"
-                            >
-                                Dashboard
-                            </Link>
-                        )}
-                    </nav>
-                </header>
-
                 {(!portfolio || typeof portfolio !== 'object') && (
                     <div className="bg-amber-100 dark:bg-amber-900/30 text-amber-900 dark:text-amber-200 px-4 py-3 text-center text-sm">
                         <p className="font-medium">Portfolio didn&apos;t load.</p>
