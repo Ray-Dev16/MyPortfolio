@@ -1,0 +1,94 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\PortfolioCertification;
+use App\Models\PortfolioExperience;
+use App\Models\PortfolioProfile;
+use App\Models\PortfolioProject;
+use App\Models\PortfolioRecommendation;
+use App\Models\PortfolioSection;
+use App\Models\PortfolioSkill;
+use Illuminate\Http\Request;
+use Inertia\Inertia;
+use Laravel\Fortify\Features;
+
+class WelcomeController extends Controller
+{
+    public function __invoke(Request $request)
+    {
+        $profile = PortfolioProfile::singleton();
+        $sections = PortfolioSection::all()->keyBy('key');
+
+        $education = $sections->get('education');
+        $educationData = $education?->data ?? [
+            'elementary' => ['school' => '', 'period' => ''],
+            'high_school' => ['school' => '', 'period' => ''],
+            'senior_high' => ['school' => '', 'period' => '', 'strand' => ''],
+            'college' => [
+                'degree' => 'BS Information Technology',
+                'institution' => 'Polytechnic University of the Philippines',
+                'period' => '2022 - 2027',
+                'strand' => '',
+            ],
+        ];
+        // Support legacy flat format for education
+        if (isset($educationData['degree']) && ! isset($educationData['college'])) {
+            $educationData['college'] = [
+                'degree' => $educationData['degree'] ?? '',
+                'institution' => $educationData['institution'] ?? '',
+                'period' => $educationData['period'] ?? '',
+                'strand' => '',
+            ];
+        }
+
+        return Inertia::render('welcome', [
+            'canRegister' => Features::enabled(Features::registration()),
+            'portfolio' => [
+                'profile' => [
+                    'name' => $profile->name,
+                    'location' => $profile->location,
+                    'tagline' => $profile->tagline,
+                    'avatar_path' => $profile->avatar_path ? asset('storage/'.$profile->avatar_path) : null,
+                    'email' => $profile->email,
+                    'schedule_url' => $profile->schedule_url,
+                    'community_url' => $profile->community_url,
+                    'linkedin_url' => $profile->linkedin_url,
+                    'github_url' => $profile->github_url,
+                    'footer_text' => $profile->footer_text,
+                    'chat_label' => $profile->chat_label,
+                ],
+                'about' => PortfolioSection::getContent('about', 'From Civil Engineering to IT, I blend structural precision with digital innovation. As a student freelancer, I\'ve always tried to bridge academic theory with real-world execution, using my background in Marketing Analysis to create high-impact experiences. Today, I am an Aspiring Full-Stack Developer and UI/UX Designer combining expertise in WordPress, SEO, and Data Analytics to build meaningful connections between brands and their audience.'),
+                'education' => $educationData,
+                'beyond_screen' => PortfolioSection::getContent('beyond_screen', 'When I step away from the tech world, I focus on Muay Thai, the gym, dance, and travel to fuel my creativity and well-being, ensuring I return to my projects with fresh energy and perspective.'),
+                'contact_intro' => PortfolioSection::getContent('contact_intro', 'Available for UI/UX and WordPress freelance projects, with added support in SEO, Google Search Console (GSC), Google My Business (GMB), and email campaigns.'),
+                'experiences' => PortfolioExperience::all()->map(fn ($e) => [
+                    'id' => $e->id,
+                    'title' => $e->title,
+                    'company' => $e->company,
+                    'period' => $e->period,
+                ])->values()->all(),
+                'projects' => PortfolioProject::all()->map(fn ($p) => [
+                    'id' => $p->id,
+                    'title' => $p->title,
+                    'description' => $p->description,
+                    'action' => $p->action_label ?? $p->url,
+                    'href' => $p->url ?? '#',
+                    'image' => $p->image_path ? asset('storage/'.$p->image_path) : null,
+                ])->values()->all(),
+                'certifications' => PortfolioCertification::all()->map(fn ($c) => [
+                    'id' => $c->id,
+                    'name' => $c->name,
+                    'issuer' => $c->issuer,
+                    'year' => $c->year,
+                ])->values()->all(),
+                'recommendations' => PortfolioRecommendation::all()->map(fn ($r) => [
+                    'id' => $r->id,
+                    'quote' => $r->quote,
+                    'author' => $r->author,
+                ])->values()->all(),
+                'techStack' => PortfolioSkill::byCategory(),
+            ],
+        ]);
+    }
+}
