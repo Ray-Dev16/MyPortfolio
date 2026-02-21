@@ -36,7 +36,12 @@ RUN composer install --no-dev --no-scripts --no-autoloader --prefer-dist
 # App code (needed for Vite/wayfinder and final runtime)
 COPY . .
 
-# Frontend build (needs full app for wayfinder route generation)
+# Wayfinder runs "php artisan wayfinder:generate" during Vite build; Laravel requires APP_KEY.
+# Placeholder only for build. Runtime uses the real APP_KEY from Render env.
+ENV APP_KEY=base64:2fl+K8y4bFb3xL1zC5vY6Q==
+ENV APP_ENV=production
+
+# Frontend build (wayfinder generates route types; needs PHP + APP_KEY above)
 RUN npm ci && npm run build
 
 RUN composer dump-autoload --optimize --no-dev
