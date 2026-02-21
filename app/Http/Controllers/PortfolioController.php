@@ -49,7 +49,7 @@ class PortfolioController extends Controller
                 'email' => $profile->email,
                 'schedule_url' => $profile->schedule_url,
                 'community_url' => $profile->community_url,
-                'linkedin_url' => $profile->linkedin_url,
+                'facebook_url' => $profile->facebook_url,
                 'github_url' => $profile->github_url,
                 'footer_text' => $profile->footer_text,
                 'chat_label' => $profile->chat_label,
@@ -68,7 +68,7 @@ class PortfolioController extends Controller
             'email' => 'required|email',
             'schedule_url' => 'nullable|url|max:500',
             'community_url' => 'nullable|url|max:500',
-            'linkedin_url' => 'nullable|url|max:500',
+            'facebook_url' => 'nullable|url|max:500',
             'github_url' => 'nullable|url|max:500',
             'footer_text' => 'nullable|string|max:500',
             'chat_label' => 'nullable|string|max:100',
@@ -165,18 +165,60 @@ class PortfolioController extends Controller
             'contact_intro' => 'portfolio.sections.contact_intro.update',
         ];
 
-        return Inertia::render('portfolio/section', [
-            'key' => $key,
+        $payload = [
+            'sectionKey' => $key,
             'title' => $titles[$key] ?? ucfirst(str_replace('_', ' ', $key)),
             'content' => $section->content,
             'updateUrl' => route($updateRoutes[$key] ?? 'portfolio.sections.about.update'),
-        ]);
+        ];
+
+        if ($key === 'beyond_screen') {
+            $data = $section->data ?? [];
+            $paths = $data['images'] ?? [];
+            $payload['images'] = array_map(
+                fn ($path) => Storage::disk('public')->url($path),
+                is_array($paths) ? $paths : [],
+            );
+        }
+
+        return Inertia::render('portfolio/section', $payload);
     }
 
     public function updateSection(Request $request, string $key): RedirectResponse
     {
-        $validated = $request->validate(['content' => 'nullable|string']);
-        PortfolioSection::updateOrCreate(['key' => $key], ['content' => $validated['content'] ?? '']);
+        $rules = ['content' => 'nullable|string'];
+        if ($key === 'beyond_screen') {
+            $rules['images.0'] = 'nullable|image|mimes:jpeg,png,jpg,webp,gif|max:2048';
+            $rules['images.1'] = 'nullable|image|mimes:jpeg,png,jpg,webp,gif|max:2048';
+            $rules['images.2'] = 'nullable|image|mimes:jpeg,png,jpg,webp,gif|max:2048';
+            $rules['images.3'] = 'nullable|image|mimes:jpeg,png,jpg,webp,gif|max:2048';
+        }
+        $validated = $request->validate($rules);
+
+        $section = PortfolioSection::firstOrCreate(['key' => $key], ['content' => '', 'data' => []]);
+        $data = $section->data ?? [];
+        $imagePaths = $data['images'] ?? [];
+
+        if ($key === 'beyond_screen' && $request->hasFile('images')) {
+            $uploads = $request->file('images');
+            $newPaths = [];
+            for ($i = 0; $i < 4; $i++) {
+                if (isset($uploads[$i])) {
+                    if (isset($imagePaths[$i]) && Storage::disk('public')->exists($imagePaths[$i])) {
+                        Storage::disk('public')->delete($imagePaths[$i]);
+                    }
+                    $newPaths[$i] = $uploads[$i]->store('portfolio/beyond_screen', 'public');
+                } elseif (isset($imagePaths[$i])) {
+                    $newPaths[$i] = $imagePaths[$i];
+                }
+            }
+            $data['images'] = array_values($newPaths);
+        }
+
+        $section->update([
+            'content' => $validated['content'] ?? '',
+            'data' => $data,
+        ]);
 
         return redirect()->back()->with('status', 'Section updated.');
     }

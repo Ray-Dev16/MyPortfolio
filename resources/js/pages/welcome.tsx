@@ -1,5 +1,4 @@
 import { Head, Link, usePage } from '@inertiajs/react';
-import { useState, useEffect, useRef } from 'react';
 import {
     MapPin,
     Calendar,
@@ -15,17 +14,18 @@ import {
     BookOpen,
     MessageCircle,
     ArrowUp,
-    Linkedin,
+    Share2,
     Github,
     Sun,
     Moon,
 } from 'lucide-react';
-import { dashboard } from '@/routes';
-import { useAppearance } from '@/hooks/use-appearance';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+import { useState, useEffect, useRef } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { useAppearance } from '@/hooks/use-appearance';
 import { cn } from '@/lib/utils';
+import { dashboard } from '@/routes';
 
 type PortfolioProfile = {
     name: string;
@@ -35,7 +35,7 @@ type PortfolioProfile = {
     email: string;
     schedule_url: string | null;
     community_url: string | null;
-    linkedin_url: string | null;
+    facebook_url: string | null;
     github_url: string | null;
     footer_text: string;
     chat_label: string;
@@ -60,6 +60,7 @@ type Portfolio = {
     about: string;
     education: PortfolioEducation;
     beyond_screen: string;
+    beyond_screen_images?: string[];
     contact_intro: string;
     experiences: PortfolioExperience[];
     projects: PortfolioProject[];
@@ -92,7 +93,7 @@ export default function Welcome({
         email: 'rblenon18@gmail.com',
         schedule_url: null,
         community_url: null,
-        linkedin_url: null,
+        facebook_url: null,
         github_url: null,
         footer_text: 'Developed in San Juan City, Metro Manila, Philippines',
         chat_label: 'Chat with Ren',
@@ -102,6 +103,7 @@ export default function Welcome({
         college: { degree: 'BS Information Technology', institution: 'Polytechnic University of the Philippines', period: '2022 - 2027', strand: '' },
     };
     const beyondScreen = p?.beyond_screen ?? 'When I step away from the tech world, I focus on Muay Thai, the gym, dance, and travel to fuel my creativity and well-being, ensuring I return to my projects with fresh energy and perspective.';
+    const beyondScreenImages: string[] = p?.beyond_screen_images ?? [];
     const contactIntro = p?.contact_intro ?? 'Available for UI/UX and WordPress freelance projects, with added support in SEO, Google Search Console (GSC), Google My Business (GMB), and email campaigns.';
     const experiences = p?.experiences ?? [
         { id: 1, title: 'WordPress Designer/Developer & SEO Specialist', company: 'Freelance', period: '2024 - Present' },
@@ -365,9 +367,12 @@ export default function Welcome({
                                         <Settings className="size-5 text-[#706f6c] dark:text-[#A1A09A]" />
                                         Tech Stack
                                     </CardTitle>
-                                    <span className="text-sm text-[#706f6c] dark:text-[#A1A09A]">
+                                    <Link
+                                        href="/tech-stack"
+                                        className="text-sm text-[#706f6c] hover:text-[#1b1b18] dark:text-[#A1A09A] dark:hover:text-[#EDEDEC]"
+                                    >
                                         View All <ChevronRight className="inline size-4" />
-                                    </span>
+                                    </Link>
                                 </CardHeader>
                                 <CardContent className="space-y-4 pt-0">
                                     <div>
@@ -460,9 +465,12 @@ export default function Welcome({
                                         <LayoutGrid className="size-5 text-[#706f6c] dark:text-[#A1A09A]" />
                                         Projects
                                     </CardTitle>
-                                    <span className="text-sm text-[#706f6c] dark:text-[#A1A09A]">
+                                    <Link
+                                        href="/projects"
+                                        className="text-sm text-[#706f6c] hover:text-[#1b1b18] dark:text-[#A1A09A] dark:hover:text-[#EDEDEC]"
+                                    >
                                         View All <ChevronRight className="inline size-4" />
-                                    </span>
+                                    </Link>
                                 </CardHeader>
                                 <CardContent className="pt-0">
                                     <div className="grid gap-4 sm:grid-cols-2">
@@ -558,15 +566,15 @@ export default function Welcome({
                                             Follow me
                                         </p>
                                         <div className="mt-2 flex gap-2">
-                                            {profile.linkedin_url && (
+                                            {profile.facebook_url && (
                                                 <a
-                                                    href={profile.linkedin_url}
+                                                    href={profile.facebook_url}
                                                     target="_blank"
                                                     rel="noopener noreferrer"
                                                     className="flex size-10 items-center justify-center rounded-lg border border-[#e8e8e6] bg-white text-[#1b1b18] transition hover:border-[#dbdbd7] hover:bg-[#f8f8f6] dark:border-[#3E3E3A] dark:bg-[#262625] dark:text-[#EDEDEC] dark:hover:border-[#62605b] dark:hover:bg-[#2e2e2d]"
-                                                    aria-label="LinkedIn"
+                                                    aria-label="Facebook"
                                                 >
-                                                    <Linkedin className="size-5" />
+                                                    <Share2 className="size-5" />
                                                 </a>
                                             )}
                                             {profile.github_url && (
@@ -652,14 +660,25 @@ export default function Welcome({
                                 <p className="text-sm leading-relaxed text-[#1b1b18] dark:text-[#EDEDEC]">
                                     {beyondScreen}
                                 </p>
-                                {/* Gallery-style row: 4 uniform image slots */}
+                                {/* Gallery: uploaded images or placeholders */}
                                 <div className="mt-4 flex flex-wrap gap-4">
-                                    {[1, 2, 3, 4].map((i) => (
-                                        <div
-                                            key={i}
-                                            className="aspect-4/3 w-28 shrink-0 overflow-hidden rounded-xl border border-[#e8e8e6] bg-[#f0f0ee] dark:border-[#3E3E3A] dark:bg-[#262625] sm:w-32"
-                                        />
-                                    ))}
+                                    {[0, 1, 2, 3].map((i) => {
+                                        const src = beyondScreenImages[i];
+                                        return (
+                                            <div
+                                                key={i}
+                                                className="aspect-4/3 w-28 shrink-0 overflow-hidden rounded-xl border border-[#e8e8e6] bg-[#f0f0ee] dark:border-[#3E3E3A] dark:bg-[#262625] sm:w-32"
+                                            >
+                                                {src ? (
+                                                    <img
+                                                        src={src}
+                                                        alt=""
+                                                        className="size-full object-cover"
+                                                    />
+                                                ) : null}
+                                            </div>
+                                        );
+                                    })}
                                 </div>
                             </div>
                         </div>

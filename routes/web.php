@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\Route;
 use Laravel\Fortify\Features;
 
 Route::get('/', WelcomeController::class)->middleware(NoCacheHeaders::class)->name('home');
+Route::get('/tech-stack', [WelcomeController::class, 'fullTechStack'])->middleware(NoCacheHeaders::class)->name('tech-stack');
+Route::get('/projects', [WelcomeController::class, 'selectedProjects'])->middleware(NoCacheHeaders::class)->name('projects');
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('dashboard', DashboardController::class)->name('dashboard');

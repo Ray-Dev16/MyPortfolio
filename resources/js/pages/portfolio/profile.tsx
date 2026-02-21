@@ -1,13 +1,13 @@
 import { Head, Link, router, useForm, usePage } from '@inertiajs/react';
-import { useEffect, useMemo, useRef, useState } from 'react';
 import { ImagePlus } from 'lucide-react';
-import AppLayout from '@/layouts/app-layout';
-import type { BreadcrumbItem } from '@/types';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import InputError from '@/components/input-error';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import AppLayout from '@/layouts/app-layout';
+import type { BreadcrumbItem } from '@/types';
 
 const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Overview', href: '/dashboard' },
@@ -32,7 +32,7 @@ export default function PortfolioProfileEdit({
         email: profile.email ?? '',
         schedule_url: profile.schedule_url ?? '',
         community_url: profile.community_url ?? '',
-        linkedin_url: profile.linkedin_url ?? '',
+        facebook_url: profile.facebook_url ?? '',
         github_url: profile.github_url ?? '',
         footer_text: profile.footer_text ?? '',
         chat_label: profile.chat_label ?? '',
@@ -241,16 +241,16 @@ export default function PortfolioProfileEdit({
                                     <InputError message={errors.community_url} />
                                 </div>
                                 <div className="space-y-1.5">
-                                    <Label htmlFor="linkedin_url" className="text-xs">LinkedIn</Label>
+                                    <Label htmlFor="facebook_url" className="text-xs">Facebook</Label>
                                     <Input
-                                        id="linkedin_url"
+                                        id="facebook_url"
                                         type="url"
-                                        value={data.linkedin_url}
-                                        onChange={(e) => setData('linkedin_url', e.target.value)}
-                                        placeholder="https://linkedin.com/in/..."
+                                        value={data.facebook_url}
+                                        onChange={(e) => setData('facebook_url', e.target.value)}
+                                        placeholder="https://facebook.com/..."
                                         className="h-9"
                                     />
-                                    <InputError message={errors.linkedin_url} />
+                                    <InputError message={errors.facebook_url} />
                                 </div>
                                 <div className="space-y-1.5">
                                     <Label htmlFor="github_url" className="text-xs">GitHub</Label>

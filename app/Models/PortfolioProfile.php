@@ -16,7 +16,7 @@ class PortfolioProfile extends Model
         'email',
         'schedule_url',
         'community_url',
-        'linkedin_url',
+        'facebook_url',
         'github_url',
         'footer_text',
         'chat_label',

@@ -28,9 +28,9 @@ import {
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
 import { useCurrentUrl } from '@/hooks/use-current-url';
+import { dashboard } from '@/routes';
 import type { NavItem } from '@/types';
 import AppLogo from './app-logo';
-import { dashboard } from '@/routes';
 
 const overviewNavItems: NavItem[] = [
     { title: 'Overview', href: dashboard(), icon: LayoutGrid },
