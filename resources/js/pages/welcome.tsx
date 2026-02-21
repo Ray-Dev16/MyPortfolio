@@ -82,6 +82,7 @@ export default function Welcome({
     portfolio?: Portfolio;
 }) {
     const { auth } = usePage().props;
+    // All sections (profile, about, education, experiences, projects, etc.) come from the admin via this prop
     const p = portfolio ?? (null as unknown as Portfolio);
     const profile = p?.profile ?? {
         name: 'Renielyn Lenon',
@@ -154,8 +155,8 @@ export default function Welcome({
                 )}
                 style={{ fontFamily: "'Instrument Sans', sans-serif" }}
             >
-                {/* Top bar — Dashboard link when logged in */}
-                <header className="sticky top-0 z-30 border-b border-[#19140014] bg-[#FDFDFC]/95 px-4 py-2.5 backdrop-blur dark:border-[#3E3E3A] dark:bg-[#0a0a0a]/95 lg:px-8">
+                {/* Top bar — Dashboard link when logged in; no border since login/register removed */}
+                <header className="sticky top-0 z-30 bg-[#FDFDFC]/95 px-4 py-2.5 backdrop-blur dark:bg-[#0a0a0a]/95 lg:px-8">
                     <nav className="mx-auto flex max-w-5xl items-center justify-end">
                         {auth.user && (
                             <Link

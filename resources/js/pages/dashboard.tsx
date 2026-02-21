@@ -60,6 +60,9 @@ export default function Dashboard({
                     <p className="text-muted-foreground">
                         Here’s a quick overview of your portfolio. Use the sidebar to edit any section.
                     </p>
+                    <p className="text-sm text-muted-foreground">
+                        Changes you save here are saved to your portfolio and appear on your landing page automatically—refresh your portfolio to see updates.
+                    </p>
                 </section>
 
                 {/* Stats */}

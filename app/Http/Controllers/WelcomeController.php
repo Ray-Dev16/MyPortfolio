@@ -15,6 +15,10 @@ use Laravel\Fortify\Features;
 
 class WelcomeController extends Controller
 {
+    /**
+     * Landing page: all content is loaded from the same DB as the admin.
+     * Changes saved in the admin (Profile, About, Education, etc.) appear here.
+     */
     public function __invoke(Request $request)
     {
         $profile = PortfolioProfile::singleton();

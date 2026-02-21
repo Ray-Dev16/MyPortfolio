@@ -3,10 +3,11 @@
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PortfolioController;
 use App\Http\Controllers\WelcomeController;
+use App\Http\Middleware\NoCacheHeaders;
 use Illuminate\Support\Facades\Route;
 use Laravel\Fortify\Features;
 
-Route::get('/', WelcomeController::class)->name('home');
+Route::get('/', WelcomeController::class)->middleware(NoCacheHeaders::class)->name('home');
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('dashboard', DashboardController::class)->name('dashboard');
