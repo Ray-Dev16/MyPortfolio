@@ -7,8 +7,9 @@
 /storage/*.key
 /storage/pail
 /resources/js/actions
-/resources/js/routes
-/resources/js/wayfinder
+# Committed so Render Node build works when PHP isn't available (or use Docker):
+# /resources/js/routes
+# /resources/js/wayfinder
 /vendor
 .DS_Store
 .env

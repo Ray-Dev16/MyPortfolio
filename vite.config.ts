@@ -19,6 +19,10 @@ export default defineConfig({
         tailwindcss(),
         wayfinder({
             formVariants: true,
+            // Skip PHP command when building without PHP (e.g. Render Node env). Use Docker on Render so PHP is available.
+            ...(process.env.RENDER === 'true' || process.env.CI
+                ? { command: 'true' }
+                : {}),
         }),
     ],
     esbuild: {
