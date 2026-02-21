@@ -16,8 +16,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::prefix('dashboard/portfolio')->name('portfolio.')->group(function () {
         Route::get('profile', [PortfolioController::class, 'editProfile'])->name('profile.edit');
         Route::put('profile', [PortfolioController::class, 'updateProfile'])->name('profile.update');
-        Route::get('sections/{key}', [PortfolioController::class, 'editSection'])->name('sections.edit')->where('key', 'about|beyond_screen|contact_intro');
-        Route::put('sections/{key}', [PortfolioController::class, 'updateSection'])->name('sections.update')->where('key', 'about|beyond_screen|contact_intro');
+        Route::get('sections/about', [PortfolioController::class, 'editSectionAbout'])->name('sections.about.edit');
+        Route::match(['put', 'post'], 'sections/about', [PortfolioController::class, 'updateSectionAbout'])->name('sections.about.update');
+        Route::get('sections/beyond_screen', [PortfolioController::class, 'editSectionBeyondScreen'])->name('sections.beyond_screen.edit');
+        Route::match(['put', 'post'], 'sections/beyond_screen', [PortfolioController::class, 'updateSectionBeyondScreen'])->name('sections.beyond_screen.update');
+        Route::get('sections/contact_intro', [PortfolioController::class, 'editSectionContactIntro'])->name('sections.contact_intro.edit');
+        Route::match(['put', 'post'], 'sections/contact_intro', [PortfolioController::class, 'updateSectionContactIntro'])->name('sections.contact_intro.update');
         Route::get('education', [PortfolioController::class, 'editEducation'])->name('education.edit');
         Route::put('education', [PortfolioController::class, 'updateEducation'])->name('education.update');
 

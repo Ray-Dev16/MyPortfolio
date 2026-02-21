@@ -183,12 +183,15 @@ export default function Welcome({
                 </header>
 
                 {(!portfolio || typeof portfolio !== 'object') && (
-                    <div className="bg-amber-100 dark:bg-amber-900/30 text-amber-900 dark:text-amber-200 px-4 py-2 text-center text-sm">
-                        Portfolio didn&apos;t load.{' '}
+                    <div className="bg-amber-100 dark:bg-amber-900/30 text-amber-900 dark:text-amber-200 px-4 py-3 text-center text-sm">
+                        <p className="font-medium">Portfolio didn&apos;t load.</p>
+                        <p className="mt-1 text-amber-800 dark:text-amber-300/90">
+                            If you run another project (e.g. Trigo) on the same port, this app is now serving that project. Run this project&apos;s server from the MyPortfolio folder (e.g. <code className="rounded bg-amber-200/50 px-1 dark:bg-amber-800/50">php artisan serve</code>) and reload.
+                        </p>
                         <button
                             type="button"
                             onClick={() => window.location.reload()}
-                            className="underline font-medium hover:no-underline"
+                            className="mt-2 underline font-medium hover:no-underline"
                         >
                             Reload page
                         </button>
@@ -262,22 +265,57 @@ export default function Welcome({
                         </div>
                     </section>
 
-                    {/* About Me — full width */}
-                    <section>
-                        <Card className="overflow-hidden rounded-xl border-[#19140014] bg-white shadow-sm dark:border-[#3E3E3A] dark:bg-[#161615]">
+                    {/* About (left, wider/taller) + Experience (right, smaller) — size ref 1st image */}
+                    <section className="grid gap-6 lg:grid-cols-[1.2fr_1fr] lg:gap-8">
+                        <Card className="overflow-hidden rounded-xl border-[#19140014] bg-white shadow-sm dark:border-[#3E3E3A] dark:bg-[#161615] min-h-[280px] flex flex-col">
                             <CardHeader className="flex flex-row items-center gap-2 pb-2">
                                 <Info className="size-5 text-[#706f6c] dark:text-[#A1A09A]" />
                                 <CardTitle className="text-base font-semibold">About Me</CardTitle>
                             </CardHeader>
-                            <CardContent className="pt-0">
+                            <CardContent className="pt-0 flex-1">
                                 <p className="text-sm leading-relaxed text-[#1b1b18] dark:text-[#EDEDEC]">
                                     {about}
                                 </p>
                             </CardContent>
                         </Card>
+                        <Card className="overflow-hidden rounded-xl border-[#19140014] bg-white shadow-sm dark:border-[#3E3E3A] dark:bg-[#161615]">
+                            <CardHeader className="flex flex-row items-center gap-2 pb-2">
+                                <Briefcase className="size-5 text-[#706f6c] dark:text-[#A1A09A]" />
+                                <CardTitle className="text-base font-semibold">Experience</CardTitle>
+                            </CardHeader>
+                            <CardContent className="pt-0">
+                                <ul className="relative space-y-6 border-l-2 border-[#e8e8e6] pl-6 dark:border-[#3E3E3A]">
+                                    {experiences.map((e, index) => (
+                                        <li key={e.id} className="relative">
+                                            <span
+                                                className={`absolute left-0 top-1.5 h-2.5 w-2.5 -translate-x-7 rounded-full ${
+                                                    index === 0
+                                                        ? 'bg-[#1b1b18] dark:bg-[#EDEDEC]'
+                                                        : 'border-2 border-[#c4c4c0] bg-white dark:border-[#A1A09A] dark:bg-[#161615]'
+                                                }`}
+                                                aria-hidden
+                                            />
+                                            <div className="flex flex-wrap items-baseline justify-between gap-2">
+                                                <span className="font-semibold text-[#1b1b18] dark:text-[#EDEDEC]">
+                                                    {e.title}
+                                                </span>
+                                                <span className="shrink-0 text-sm text-[#706f6c] dark:text-[#A1A09A]">
+                                                    {e.period}
+                                                </span>
+                                            </div>
+                                            {e.company && (
+                                                <p className="mt-0.5 text-sm text-[#706f6c] dark:text-[#A1A09A]">
+                                                    {e.company}
+                                                </p>
+                                            )}
+                                        </li>
+                                    ))}
+                                </ul>
+                            </CardContent>
+                        </Card>
                     </section>
 
-                    {/* Left: Education, Tech Stack, Certifications | Right: Experience, Projects (2nd picture layout) */}
+                    {/* Left: Education, Tech Stack, Certifications | Right: Projects, Recommendations */}
                     <section className="mt-10 grid gap-6 lg:grid-cols-[1fr_1.4fr] lg:gap-8">
                         <div className="flex flex-col gap-6">
                             {/* Education — compact card like 2nd picture */}
@@ -416,27 +454,6 @@ export default function Welcome({
                         </div>
 
                         <div className="flex flex-col gap-6">
-                            <Card className="overflow-hidden rounded-xl border-[#19140014] bg-white shadow-sm dark:border-[#3E3E3A] dark:bg-[#161615]">
-                                <CardHeader className="flex flex-row items-center gap-2 pb-2">
-                                    <Briefcase className="size-5 text-[#706f6c] dark:text-[#A1A09A]" />
-                                    <CardTitle className="text-base font-semibold">Experience</CardTitle>
-                                </CardHeader>
-                                <CardContent className="pt-0">
-                                    <ul className="space-y-2 text-sm text-[#1b1b18] dark:text-[#EDEDEC]">
-                                        {experiences.map((e) => (
-                                            <li key={e.id} className="flex flex-wrap items-baseline justify-between gap-2">
-                                                <span>
-                                                    <span className="text-[#706f6c] dark:text-[#A1A09A]">• </span>
-                                                    <span className="font-medium">{e.title}</span>
-                                                    {e.company && <span className="text-[#706f6c] dark:text-[#A1A09A]"> — {e.company}</span>}
-                                                </span>
-                                                <span className="text-[#706f6c] dark:text-[#A1A09A] shrink-0">{e.period}</span>
-                                            </li>
-                                        ))}
-                                    </ul>
-                                </CardContent>
-                            </Card>
-
                             <Card id="projects" className="overflow-hidden rounded-xl border-[#19140014] bg-white shadow-sm dark:border-[#3E3E3A] dark:bg-[#161615]">
                                 <CardHeader className="flex flex-row items-center justify-between pb-2">
                                     <CardTitle className="flex items-center gap-2 text-base font-semibold">
@@ -523,12 +540,105 @@ export default function Welcome({
                                     </div>
                                 </CardContent>
                             </Card>
+
+                            {/* Let's work together — below Recommendations */}
+                            <div
+                                id="contact"
+                                className="overflow-hidden rounded-xl border border-[#e8e8e6] bg-white shadow-[0_1px_3px_0_rgba(0,0,0,0.06),0_1px_2px_-1px_rgba(0,0,0,0.06)] dark:border-[#3E3E3A] dark:bg-[#161615] dark:shadow-none"
+                            >
+                                <div className="grid gap-6 p-6 lg:grid-cols-2 lg:gap-8 lg:p-8">
+                                    <div>
+                                        <h2 className="text-xl font-bold tracking-tight text-[#1b1b18] dark:text-[#EDEDEC]">
+                                            Let's work <span className="font-semibold text-[#706f6c] dark:text-[#A1A09A]">together.</span>
+                                        </h2>
+                                        <p className="mt-4 text-sm leading-relaxed text-[#1b1b18] dark:text-[#EDEDEC]">
+                                            {contactIntro}
+                                        </p>
+                                        <p className="mt-6 text-xs font-medium uppercase tracking-wider text-[#706f6c] dark:text-[#A1A09A]">
+                                            Follow me
+                                        </p>
+                                        <div className="mt-2 flex gap-2">
+                                            {profile.linkedin_url && (
+                                                <a
+                                                    href={profile.linkedin_url}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="flex size-10 items-center justify-center rounded-lg border border-[#e8e8e6] bg-white text-[#1b1b18] transition hover:border-[#dbdbd7] hover:bg-[#f8f8f6] dark:border-[#3E3E3A] dark:bg-[#262625] dark:text-[#EDEDEC] dark:hover:border-[#62605b] dark:hover:bg-[#2e2e2d]"
+                                                    aria-label="LinkedIn"
+                                                >
+                                                    <Linkedin className="size-5" />
+                                                </a>
+                                            )}
+                                            {profile.github_url && (
+                                                <a
+                                                    href={profile.github_url}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="flex size-10 items-center justify-center rounded-lg border border-[#e8e8e6] bg-white text-[#1b1b18] transition hover:border-[#dbdbd7] hover:bg-[#f8f8f6] dark:border-[#3E3E3A] dark:bg-[#262625] dark:text-[#EDEDEC] dark:hover:border-[#62605b] dark:hover:bg-[#2e2e2d]"
+                                                    aria-label="GitHub"
+                                                >
+                                                    <Github className="size-5" />
+                                                </a>
+                                            )}
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <p className="text-xs font-medium uppercase tracking-wider text-[#706f6c] dark:text-[#A1A09A]">
+                                            Get in touch
+                                        </p>
+                                        <div className="mt-3 flex flex-col gap-3">
+                                            <a
+                                                href={`mailto:${profile.email}`}
+                                                className="flex items-center gap-3 rounded-lg border border-[#e8e8e6] bg-[#fafaf9] px-4 py-3 transition hover:border-[#dbdbd7] dark:border-[#3E3E3A] dark:bg-[#1f1f1e] dark:hover:border-[#62605b]"
+                                            >
+                                                <Mail className="size-5 shrink-0 text-[#706f6c] dark:text-[#A1A09A]" />
+                                                <div className="min-w-0">
+                                                    <p className="text-xs font-medium uppercase tracking-wider text-[#706f6c] dark:text-[#A1A09A]">
+                                                        Email
+                                                    </p>
+                                                    <p className="mt-0.5 truncate text-sm font-medium text-[#1b1b18] dark:text-[#EDEDEC]">
+                                                        {profile.email}
+                                                    </p>
+                                                </div>
+                                            </a>
+                                            <a
+                                                href={profile.schedule_url ?? '#'}
+                                                className="flex items-center gap-3 rounded-lg border border-[#e8e8e6] bg-[#fafaf9] px-4 py-3 transition hover:border-[#dbdbd7] dark:border-[#3E3E3A] dark:bg-[#1f1f1e] dark:hover:border-[#62605b]"
+                                            >
+                                                <Calendar className="size-5 shrink-0 text-[#706f6c] dark:text-[#A1A09A]" />
+                                                <div className="min-w-0">
+                                                    <p className="text-xs font-medium uppercase tracking-wider text-[#706f6c] dark:text-[#A1A09A]">
+                                                        Let's talk
+                                                    </p>
+                                                    <p className="mt-0.5 text-sm font-medium text-[#1b1b18] dark:text-[#EDEDEC]">
+                                                        Schedule a Call
+                                                    </p>
+                                                </div>
+                                            </a>
+                                            <a
+                                                id="community"
+                                                href={profile.community_url ?? '#'}
+                                                className="flex items-center gap-3 rounded-lg border border-[#e8e8e6] bg-[#fafaf9] px-4 py-3 transition hover:border-[#dbdbd7] dark:border-[#3E3E3A] dark:bg-[#1f1f1e] dark:hover:border-[#62605b]"
+                                            >
+                                                <Users className="size-5 shrink-0 text-[#706f6c] dark:text-[#A1A09A]" />
+                                                <div className="min-w-0">
+                                                    <p className="text-xs font-medium uppercase tracking-wider text-[#706f6c] dark:text-[#A1A09A]">
+                                                        Community
+                                                    </p>
+                                                    <p className="mt-0.5 text-sm font-medium text-[#1b1b18] dark:text-[#EDEDEC]">
+                                                        Join Discussion
+                                                    </p>
+                                                </div>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </section>
 
-                    {/* Beyond the Screen + Let's work together */}
-                    <section className="mt-10 grid gap-6 lg:grid-cols-[1fr_1.2fr] lg:gap-8">
-                        {/* Beyond the Screen — white card, book icon, text, image gallery */}
+                    {/* Beyond the Screen — full width */}
+                    <section className="mt-10">
                         <div className="overflow-hidden rounded-xl border border-[#e8e8e6] bg-white shadow-[0_1px_3px_0_rgba(0,0,0,0.06),0_1px_2px_-1px_rgba(0,0,0,0.06)] dark:border-[#3E3E3A] dark:bg-[#161615] dark:shadow-none">
                             <div className="flex flex-row items-center gap-2 border-b border-[#f0f0ee] px-6 py-4 dark:border-[#262625]">
                                 <span className="flex size-9 items-center justify-center rounded-md border border-[#e8e8e6] bg-[#f8f8f6] dark:border-[#3E3E3A] dark:bg-[#262625]">
@@ -542,103 +652,14 @@ export default function Welcome({
                                 <p className="text-sm leading-relaxed text-[#1b1b18] dark:text-[#EDEDEC]">
                                     {beyondScreen}
                                 </p>
-                                <div className="mt-4 flex gap-3">
-                                    <div className="aspect-4/3 w-24 shrink-0 overflow-hidden rounded-lg border border-[#e8e8e6] bg-[#f0f0ee] dark:border-[#3E3E3A] dark:bg-[#262625]" />
-                                    <div className="aspect-4/3 w-24 shrink-0 overflow-hidden rounded-lg border border-[#e8e8e6] bg-[#f0f0ee] dark:border-[#3E3E3A] dark:bg-[#262625]" />
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Let's work together — two-column: intro + FOLLOW ME | GET IN TOUCH + contact cards */}
-                        <div
-                            id="contact"
-                            className="overflow-hidden rounded-xl border border-[#e8e8e6] bg-white shadow-[0_1px_3px_0_rgba(0,0,0,0.06),0_1px_2px_-1px_rgba(0,0,0,0.06)] dark:border-[#3E3E3A] dark:bg-[#161615] dark:shadow-none"
-                        >
-                            <div className="grid gap-6 p-6 lg:grid-cols-2 lg:gap-8 lg:p-8">
-                                <div>
-                                    <h2 className="text-xl font-bold tracking-tight text-[#1b1b18] dark:text-[#EDEDEC]">
-                                        Let's work <span className="font-semibold text-[#706f6c] dark:text-[#A1A09A]">together.</span>
-                                    </h2>
-                                    <p className="mt-4 text-sm leading-relaxed text-[#1b1b18] dark:text-[#EDEDEC]">
-                                        {contactIntro}
-                                    </p>
-                                    <p className="mt-6 text-xs font-medium uppercase tracking-wider text-[#706f6c] dark:text-[#A1A09A]">
-                                        Follow me
-                                    </p>
-                                    <div className="mt-2 flex gap-2">
-                                        {profile.linkedin_url && (
-                                            <a
-                                                href={profile.linkedin_url}
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                className="flex size-10 items-center justify-center rounded-lg border border-[#e8e8e6] bg-white text-[#1b1b18] transition hover:border-[#dbdbd7] hover:bg-[#f8f8f6] dark:border-[#3E3E3A] dark:bg-[#262625] dark:text-[#EDEDEC] dark:hover:border-[#62605b] dark:hover:bg-[#2e2e2d]"
-                                                aria-label="LinkedIn"
-                                            >
-                                                <Linkedin className="size-5" />
-                                            </a>
-                                        )}
-                                        {profile.github_url && (
-                                            <a
-                                                href={profile.github_url}
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                className="flex size-10 items-center justify-center rounded-lg border border-[#e8e8e6] bg-white text-[#1b1b18] transition hover:border-[#dbdbd7] hover:bg-[#f8f8f6] dark:border-[#3E3E3A] dark:bg-[#262625] dark:text-[#EDEDEC] dark:hover:border-[#62605b] dark:hover:bg-[#2e2e2d]"
-                                                aria-label="GitHub"
-                                            >
-                                                <Github className="size-5" />
-                                            </a>
-                                        )}
-                                    </div>
-                                </div>
-                                <div>
-                                    <p className="text-xs font-medium uppercase tracking-wider text-[#706f6c] dark:text-[#A1A09A]">
-                                        Get in touch
-                                    </p>
-                                    <div className="mt-3 flex flex-col gap-3">
-                                        <a
-                                            href={`mailto:${profile.email}`}
-                                            className="flex items-center gap-3 rounded-lg border border-[#e8e8e6] bg-[#fafaf9] px-4 py-3 transition hover:border-[#dbdbd7] dark:border-[#3E3E3A] dark:bg-[#1f1f1e] dark:hover:border-[#62605b]"
-                                        >
-                                            <Mail className="size-5 shrink-0 text-[#706f6c] dark:text-[#A1A09A]" />
-                                            <div className="min-w-0">
-                                                <p className="text-xs font-medium uppercase tracking-wider text-[#706f6c] dark:text-[#A1A09A]">
-                                                    Email
-                                                </p>
-                                                <p className="mt-0.5 truncate text-sm font-medium text-[#1b1b18] dark:text-[#EDEDEC]">
-                                                    {profile.email}
-                                                </p>
-                                            </div>
-                                        </a>
-                                        <a
-                                            href={profile.schedule_url ?? '#'}
-                                            className="flex items-center gap-3 rounded-lg border border-[#e8e8e6] bg-[#fafaf9] px-4 py-3 transition hover:border-[#dbdbd7] dark:border-[#3E3E3A] dark:bg-[#1f1f1e] dark:hover:border-[#62605b]"
-                                        >
-                                            <Calendar className="size-5 shrink-0 text-[#706f6c] dark:text-[#A1A09A]" />
-                                            <div className="min-w-0">
-                                                <p className="text-xs font-medium uppercase tracking-wider text-[#706f6c] dark:text-[#A1A09A]">
-                                                    Let's talk
-                                                </p>
-                                                <p className="mt-0.5 text-sm font-medium text-[#1b1b18] dark:text-[#EDEDEC]">
-                                                    Schedule a Call
-                                                </p>
-                                            </div>
-                                        </a>
-                                        <a
-                                            id="community"
-                                            href={profile.community_url ?? '#'}
-                                            className="flex items-center gap-3 rounded-lg border border-[#e8e8e6] bg-[#fafaf9] px-4 py-3 transition hover:border-[#dbdbd7] dark:border-[#3E3E3A] dark:bg-[#1f1f1e] dark:hover:border-[#62605b]"
-                                        >
-                                            <Users className="size-5 shrink-0 text-[#706f6c] dark:text-[#A1A09A]" />
-                                            <div className="min-w-0">
-                                                <p className="text-xs font-medium uppercase tracking-wider text-[#706f6c] dark:text-[#A1A09A]">
-                                                    Community
-                                                </p>
-                                                <p className="mt-0.5 text-sm font-medium text-[#1b1b18] dark:text-[#EDEDEC]">
-                                                    Join Discussion
-                                                </p>
-                                            </div>
-                                        </a>
-                                    </div>
+                                {/* Gallery-style row: 4 uniform image slots */}
+                                <div className="mt-4 flex flex-wrap gap-4">
+                                    {[1, 2, 3, 4].map((i) => (
+                                        <div
+                                            key={i}
+                                            className="aspect-4/3 w-28 shrink-0 overflow-hidden rounded-xl border border-[#e8e8e6] bg-[#f0f0ee] dark:border-[#3E3E3A] dark:bg-[#262625] sm:w-32"
+                                        />
+                                    ))}
                                 </div>
                             </div>
                         </div>

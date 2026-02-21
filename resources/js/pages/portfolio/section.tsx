@@ -10,13 +10,16 @@ export default function PortfolioSectionEdit({
     key: sectionKey,
     title,
     content,
+    updateUrl,
 }: {
     key: string;
     title: string;
     content: string;
+    updateUrl?: string;
 }) {
     const status = (usePage().props.flash as { status?: string } | undefined)?.status;
     const { data, setData, put, processing, errors } = useForm({ content: content ?? '' });
+    const saveUrl = updateUrl ?? `/dashboard/portfolio/sections/${sectionKey}`;
     const breadcrumbs: BreadcrumbItem[] = [
         { title: 'Overview', href: '/dashboard' },
         { title, href: `/dashboard/portfolio/sections/${sectionKey}` },
@@ -43,7 +46,7 @@ export default function PortfolioSectionEdit({
                         <form
                             onSubmit={(e) => {
                                 e.preventDefault();
-                                put(`/dashboard/portfolio/sections/${sectionKey}`);
+                                put(saveUrl);
                             }}
                             className="space-y-6"
                         >

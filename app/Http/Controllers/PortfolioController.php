@@ -22,14 +22,14 @@ class PortfolioController extends Controller
         return Inertia::render('portfolio/index', [
             'cards' => [
                 ['title' => 'Profile', 'description' => 'Name, location, tagline, avatar, links', 'url' => route('portfolio.profile.edit'), 'icon' => 'user'],
-                ['title' => 'About Me', 'description' => 'Introduction and bio', 'url' => route('portfolio.sections.edit', 'about'), 'icon' => 'info'],
+                ['title' => 'About Me', 'description' => 'Introduction and bio', 'url' => route('portfolio.sections.about.edit'), 'icon' => 'info'],
                 ['title' => 'Education', 'description' => 'Elementary, High School, Senior High, College & strand', 'url' => route('portfolio.education.edit'), 'icon' => 'graduation'],
                 ['title' => 'Experience', 'description' => 'Work history', 'url' => route('portfolio.experiences.index'), 'icon' => 'briefcase'],
                 ['title' => 'Projects', 'description' => 'Portfolio projects', 'url' => route('portfolio.projects.index'), 'icon' => 'layout-grid'],
                 ['title' => 'Tech Stack', 'description' => 'Skills by category', 'url' => route('portfolio.skills.index'), 'icon' => 'settings'],
                 ['title' => 'Certifications', 'description' => 'Certifications list', 'url' => route('portfolio.certifications.index'), 'icon' => 'check-circle'],
                 ['title' => 'Recommendations', 'description' => 'Testimonials', 'url' => route('portfolio.recommendations.index'), 'icon' => 'message-circle'],
-                ['title' => 'Beyond the Screen', 'description' => 'Personal interests', 'url' => route('portfolio.sections.edit', 'beyond_screen'), 'icon' => 'book-open'],
+                ['title' => 'Beyond the Screen', 'description' => 'Personal interests', 'url' => route('portfolio.sections.beyond_screen.edit'), 'icon' => 'book-open'],
                 ['title' => 'Contact / CTA', 'description' => 'Intro text and Get in Touch (email, schedule, community)', 'url' => route('portfolio.contact-cta.edit'), 'icon' => 'mail'],
             ],
         ]);
@@ -120,6 +120,36 @@ class PortfolioController extends Controller
         return redirect()->route('portfolio.contact-cta.edit')->with('status', 'Contact CTA updated.');
     }
 
+    public function editSectionAbout(): Response
+    {
+        return $this->editSection('about');
+    }
+
+    public function updateSectionAbout(Request $request): RedirectResponse
+    {
+        return $this->updateSection($request, 'about');
+    }
+
+    public function editSectionBeyondScreen(): Response
+    {
+        return $this->editSection('beyond_screen');
+    }
+
+    public function updateSectionBeyondScreen(Request $request): RedirectResponse
+    {
+        return $this->updateSection($request, 'beyond_screen');
+    }
+
+    public function editSectionContactIntro(): Response
+    {
+        return $this->editSection('contact_intro');
+    }
+
+    public function updateSectionContactIntro(Request $request): RedirectResponse
+    {
+        return $this->updateSection($request, 'contact_intro');
+    }
+
     public function editSection(string $key): Response
     {
         $section = PortfolioSection::firstOrCreate(['key' => $key], ['content' => '']);
@@ -129,10 +159,17 @@ class PortfolioController extends Controller
             'contact_intro' => 'Contact / CTA',
         ];
 
+        $updateRoutes = [
+            'about' => 'portfolio.sections.about.update',
+            'beyond_screen' => 'portfolio.sections.beyond_screen.update',
+            'contact_intro' => 'portfolio.sections.contact_intro.update',
+        ];
+
         return Inertia::render('portfolio/section', [
             'key' => $key,
             'title' => $titles[$key] ?? ucfirst(str_replace('_', ' ', $key)),
             'content' => $section->content,
+            'updateUrl' => route($updateRoutes[$key] ?? 'portfolio.sections.about.update'),
         ]);
     }
 
@@ -141,7 +178,7 @@ class PortfolioController extends Controller
         $validated = $request->validate(['content' => 'nullable|string']);
         PortfolioSection::updateOrCreate(['key' => $key], ['content' => $validated['content'] ?? '']);
 
-        return redirect()->route('portfolio.sections.edit', $key)->with('status', 'Section updated.');
+        return redirect()->back()->with('status', 'Section updated.');
     }
 
     public function editEducation(): Response
