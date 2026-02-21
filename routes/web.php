@@ -20,6 +20,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('education', [PortfolioController::class, 'editEducation'])->name('education.edit');
         Route::put('education', [PortfolioController::class, 'updateEducation'])->name('education.update');
 
+        Route::get('contact-cta', [PortfolioController::class, 'editContactCta'])->name('contact-cta.edit');
+        Route::put('contact-cta', [PortfolioController::class, 'updateContactCta'])->name('contact-cta.update');
+
         Route::get('experiences', [PortfolioController::class, 'experiencesIndex'])->name('experiences.index');
         Route::post('experiences', [PortfolioController::class, 'experiencesStore'])->name('experiences.store');
         Route::put('experiences/{experience}', [PortfolioController::class, 'experiencesUpdate'])->name('experiences.update');

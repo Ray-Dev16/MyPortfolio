@@ -30,7 +30,7 @@ class PortfolioController extends Controller
                 ['title' => 'Certifications', 'description' => 'Certifications list', 'url' => route('portfolio.certifications.index'), 'icon' => 'check-circle'],
                 ['title' => 'Recommendations', 'description' => 'Testimonials', 'url' => route('portfolio.recommendations.index'), 'icon' => 'message-circle'],
                 ['title' => 'Beyond the Screen', 'description' => 'Personal interests', 'url' => route('portfolio.sections.edit', 'beyond_screen'), 'icon' => 'book-open'],
-                ['title' => 'Contact / CTA', 'description' => 'Contact intro and links', 'url' => route('portfolio.sections.edit', 'contact_intro'), 'icon' => 'mail'],
+                ['title' => 'Contact / CTA', 'description' => 'Intro text and Get in Touch (email, schedule, community)', 'url' => route('portfolio.contact-cta.edit'), 'icon' => 'mail'],
             ],
         ]);
     }
@@ -84,6 +84,40 @@ class PortfolioController extends Controller
         $profile->update($validated);
 
         return redirect()->route('portfolio.profile.edit')->with('status', 'Profile updated.');
+    }
+
+    public function editContactCta(): Response
+    {
+        $section = PortfolioSection::firstOrCreate(['key' => 'contact_intro'], ['content' => '']);
+        $profile = PortfolioProfile::singleton();
+
+        return Inertia::render('portfolio/contact-cta', [
+            'contact_intro' => $section->content ?? '',
+            'email' => $profile->email ?? '',
+            'schedule_url' => $profile->schedule_url ?? '',
+            'community_url' => $profile->community_url ?? '',
+        ]);
+    }
+
+    public function updateContactCta(Request $request): RedirectResponse
+    {
+        $validated = $request->validate([
+            'contact_intro' => 'nullable|string',
+            'email' => 'required|email',
+            'schedule_url' => 'nullable|url|max:500',
+            'community_url' => 'nullable|url|max:500',
+        ]);
+        PortfolioSection::updateOrCreate(
+            ['key' => 'contact_intro'],
+            ['content' => $validated['contact_intro'] ?? '']
+        );
+        PortfolioProfile::singleton()->update([
+            'email' => $validated['email'],
+            'schedule_url' => $validated['schedule_url'] ?? null,
+            'community_url' => $validated['community_url'] ?? null,
+        ]);
+
+        return redirect()->route('portfolio.contact-cta.edit')->with('status', 'Contact CTA updated.');
     }
 
     public function editSection(string $key): Response

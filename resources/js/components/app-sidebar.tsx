@@ -46,7 +46,7 @@ const portfolioNavItems: NavItem[] = [
     { title: 'Certifications', href: '/dashboard/portfolio/certifications', icon: CheckCircle },
     { title: 'Recommendations', href: '/dashboard/portfolio/recommendations', icon: MessageCircle },
     { title: 'Beyond the Screen', href: '/dashboard/portfolio/sections/beyond_screen', icon: BookOpen },
-    { title: 'Contact / CTA', href: '/dashboard/portfolio/sections/contact_intro', icon: Mail },
+    { title: 'Contact / CTA', href: '/dashboard/portfolio/contact-cta', icon: Mail },
 ];
 
 function NavGroup({ label, items }: { label: string; items: NavItem[] }) {
