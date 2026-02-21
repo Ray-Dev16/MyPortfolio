@@ -3,7 +3,6 @@ import {
     BookOpen,
     Briefcase,
     CheckCircle,
-    Folder,
     GraduationCap,
     Info,
     LayoutGrid,

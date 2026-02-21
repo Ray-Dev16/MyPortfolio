@@ -92,6 +92,20 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Fortify Route Paths
+    |--------------------------------------------------------------------------
+    |
+    | Custom paths for Fortify routes. Use a hidden path for login so the
+    | login page is not discoverable at the default /login URL.
+    |
+    */
+
+    'paths' => [
+        'login' => 'login-0416',
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Fortify Routes Middleware
     |--------------------------------------------------------------------------
     |

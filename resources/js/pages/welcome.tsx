@@ -10,16 +10,16 @@ import {
     LayoutGrid,
     ChevronRight,
     Settings,
+    Check,
     CheckCircle,
     BookOpen,
-    MessageCircle,
     ArrowUp,
-    Share2,
+    Facebook,
     Github,
     Sun,
     Moon,
 } from 'lucide-react';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -76,7 +76,6 @@ const defaultTechStack: PortfolioTechStack = {
 };
 
 export default function Welcome({
-    canRegister = true,
     portfolio,
 }: {
     canRegister?: boolean;
@@ -203,7 +202,7 @@ export default function Welcome({
                 <main className="mx-auto max-w-5xl px-4 py-8 lg:px-8 lg:py-12">
                     {/* Profile header */}
                     <section className="mb-10 flex flex-col gap-6 sm:flex-row sm:items-start sm:gap-8">
-                        <Avatar className="h-24 w-24 shrink-0 rounded-full border-2 border-[#e3e3e0] dark:border-[#3E3E3A] sm:h-28 sm:w-28">
+                        <Avatar className="h-32 w-32 shrink-0 rounded-full border-2 border-[#e3e3e0] dark:border-[#3E3E3A] sm:h-36 sm:w-36">
                             <AvatarImage src={profile.avatar_path ?? undefined} alt="Profile" />
                             <AvatarFallback className="bg-[#e8e8e6] text-lg font-medium text-[#1b1b18] dark:bg-[#262625] dark:text-[#EDEDEC]">
                                 {profile.name.slice(0, 2).toUpperCase()}
@@ -215,8 +214,11 @@ export default function Welcome({
                                     <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
                                         {profile.name}
                                     </h1>
-                                    <span className="text-[#2563eb]" aria-hidden>
-                                        ✓
+                                    <span
+                                        className="flex size-3.5 shrink-0 items-center justify-center rounded-full bg-[#1877F2] shadow-[0_0_0_1px_rgba(24,119,242,0.2)] sm:size-4"
+                                        aria-hidden
+                                    >
+                                        <Check className="size-2 stroke-[2.5] text-white sm:size-2.5" />
                                     </span>
                                 </div>
                                 <button
@@ -574,7 +576,7 @@ export default function Welcome({
                                                     className="flex size-10 items-center justify-center rounded-lg border border-[#e8e8e6] bg-white text-[#1b1b18] transition hover:border-[#dbdbd7] hover:bg-[#f8f8f6] dark:border-[#3E3E3A] dark:bg-[#262625] dark:text-[#EDEDEC] dark:hover:border-[#62605b] dark:hover:bg-[#2e2e2d]"
                                                     aria-label="Facebook"
                                                 >
-                                                    <Share2 className="size-5" />
+                                                    <Facebook className="size-5" />
                                                 </a>
                                             )}
                                             {profile.github_url && (
@@ -709,16 +711,6 @@ export default function Welcome({
                             <ArrowUp className="size-5" />
                         </Button>
                     )}
-                    <Button
-                        size="default"
-                        className="rounded-full bg-[#1b1b18] px-4 py-3 dark:bg-[#EDEDEC] dark:text-[#1b1b18]"
-                        asChild
-                    >
-                        <a href={`mailto:${profile.email}`}>
-                            <MessageCircle className="size-4" />
-                            {profile.chat_label}
-                        </a>
-                    </Button>
                 </div>
             </div>
         </>

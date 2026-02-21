@@ -46,11 +46,8 @@ export default function PortfolioProfileEdit({
     }, [avatarPreview]);
 
     const avatarUrl = avatarPreview ?? profile.avatar_url ?? null;
-    const [avatarLoadError, setAvatarLoadError] = useState(false);
-    useEffect(() => {
-        setAvatarLoadError(false);
-    }, [avatarUrl]);
-    const showAvatarImage = avatarUrl && !avatarLoadError;
+    const [failedAvatarUrls, setFailedAvatarUrls] = useState<Set<string>>(new Set());
+    const showAvatarImage = avatarUrl && !failedAvatarUrls.has(avatarUrl);
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
@@ -180,8 +177,7 @@ export default function PortfolioProfileEdit({
                                                 src={avatarUrl ?? ''}
                                                 alt="Profile"
                                                 className="size-full object-cover"
-                                                onLoad={() => setAvatarLoadError(false)}
-                                                onError={() => setAvatarLoadError(true)}
+                                                onError={() => setFailedAvatarUrls((prev) => new Set(prev).add(avatarUrl ?? ''))}
                                             />
                                         ) : (
                                             <div className="flex size-full items-center justify-center">

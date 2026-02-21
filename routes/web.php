@@ -7,6 +7,9 @@ use App\Http\Middleware\NoCacheHeaders;
 use Illuminate\Support\Facades\Route;
 use Laravel\Fortify\Features;
 
+// Block default /login so the login page is only available at the hidden path (login-0416).
+Route::get('login', fn () => abort(404))->name('login.block');
+
 Route::get('/', WelcomeController::class)->middleware(NoCacheHeaders::class)->name('home');
 Route::get('/tech-stack', [WelcomeController::class, 'fullTechStack'])->middleware(NoCacheHeaders::class)->name('tech-stack');
 Route::get('/projects', [WelcomeController::class, 'selectedProjects'])->middleware(NoCacheHeaders::class)->name('projects');
