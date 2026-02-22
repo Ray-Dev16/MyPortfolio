@@ -73,7 +73,9 @@ If you see **500 | SERVER ERROR** when opening the site:
 
 ## PostgreSQL via Environment variables
 
-To use PostgreSQL by setting individual env vars (no `DATABASE_URL`), add these in Render → your service → **Environment**:
+**Easiest:** Set only **DATABASE_URL**. In Postgres → **Connections**, copy the full **Internal Database URL** and paste it as **DATABASE_URL** in your web service Environment. Remove any **DB_HOST**, **DB_PORT**, **DB_DATABASE**, **DB_USERNAME**, **DB_PASSWORD** so Laravel uses the URL. Redeploy.
+
+**Or** use individual env vars in Render → your service → **Environment**:
 
 | Key              | Example value        | Required |
 |------------------|----------------------|----------|
@@ -83,5 +85,6 @@ To use PostgreSQL by setting individual env vars (no `DATABASE_URL`), add these 
 | **DB_DATABASE**  | Your database name   | Yes      |
 | **DB_USERNAME**  | Your DB user         | Yes      |
 | **DB_PASSWORD**  | Your DB password     | Yes      |
+| **DB_SSLMODE**  | `require`           | Yes (Render Postgres needs SSL) |
 
-Use the real host, database name, username, and password from your Postgres provider (e.g. Render Postgres “Internal Database URL” or your own server). Copy **DB_HOST** exactly from Render Postgres → Connections (one wrong character causes 500). After saving, redeploy so the app uses PostgreSQL.
+Use the real host, database name, username, and password from your Postgres provider (e.g. Render Postgres “Internal Database URL” or your own server). Copy **DB_HOST** exactly from Postgres → Connections (hostname ends in `-a`, not `-2`). Copy the password with the copy button—do not retype it. After saving, redeploy so the app uses PostgreSQL.
