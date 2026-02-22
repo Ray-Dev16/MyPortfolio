@@ -16,7 +16,7 @@ return [
     |
     */
 
-    'default' => env('DB_CONNECTION', 'sqlite'),
+    'default' => env('DB_CONNECTION') ?: (preg_match('#^postgres(ql)?://#', env('DATABASE_URL', '')) ? 'pgsql' : 'sqlite'),
 
     /*
     |--------------------------------------------------------------------------
