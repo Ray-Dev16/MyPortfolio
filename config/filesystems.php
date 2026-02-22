@@ -21,7 +21,12 @@ return [
     |--------------------------------------------------------------------------
     | Set to "r2" when R2_* env vars are set for Cloudflare R2; otherwise "public".
     */
-    'portfolio_media_disk' => env('PORTFOLIO_MEDIA_DISK') ?: (env('R2_BUCKET') ? 'r2' : 'public'),
+    'portfolio_media_disk' => env('PORTFOLIO_MEDIA_DISK') ?: (static function () {
+        if (env('R2_BUCKET') && env('R2_ACCESS_KEY_ID') && env('R2_SECRET_ACCESS_KEY') && env('R2_ENDPOINT') && env('R2_URL')) {
+            return 'r2';
+        }
+        return 'public';
+    })(),
 
     /*
     |--------------------------------------------------------------------------
