@@ -11,6 +11,11 @@ use App\Models\PortfolioSection;
 use App\Models\PortfolioSkill;
 use Illuminate\Database\Seeder;
 
+/**
+ * Default portfolio content. firstOrCreate only adds missing rows; it does not overwrite.
+ * Warning: php artisan migrate:fresh --seed wipes all data (including your admin edits) and re-runs this seeder.
+ * To keep your edits, use "php artisan migrate" for new migrations instead of migrate:fresh.
+ */
 class PortfolioSeeder extends Seeder
 {
     public function run(): void

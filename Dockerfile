@@ -49,4 +49,5 @@ RUN chmod -R 775 storage bootstrap/cache 2>/dev/null || true
 
 EXPOSE 8080
 ENV PORT=8080
-CMD php artisan serve --host=0.0.0.0 --port=${PORT}
+# Run migrations on startup (no Render Shell needed); then start the web server.
+CMD sh -c "php artisan migrate --force && exec php artisan serve --host=0.0.0.0 --port=${PORT}"

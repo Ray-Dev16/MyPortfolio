@@ -14,11 +14,10 @@ You can fix it in one of two ways:
 2. Go to **Settings** (or the service configuration).
 3. Set **Runtime** (or **Environment**) to **Docker** (not Node).
 4. Set **Dockerfile Path** to `./Dockerfile` (or leave default).
-5. **Clear** the **Build Command** and set **Start Command** to:
+5. **Clear** the **Build Command** and leave **Start Command** empty so the Docker image runs migrations on startup then the web server (no Shell needed). Or set **Start Command** to:
    ```bash
-   php artisan serve --host=0.0.0.0 --port=$PORT
+   php artisan migrate --force && php artisan serve --host=0.0.0.0 --port=$PORT
    ```
-   (If Render hides Build/Start when using Docker, leave them empty.)
 6. Save and **Deploy** again.
 
 The build will run inside the Docker image, which has both PHP and Node, so `wayfinder:generate` and the rest of the build will succeed.
