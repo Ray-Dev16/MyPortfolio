@@ -9,8 +9,8 @@ use App\Models\PortfolioProject;
 use App\Models\PortfolioRecommendation;
 use App\Models\PortfolioSection;
 use App\Models\PortfolioSkill;
+use App\Support\PortfolioMedia;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Laravel\Fortify\Features;
 
@@ -54,7 +54,7 @@ class WelcomeController extends Controller
                     'name' => $profile->name,
                     'location' => $profile->location,
                     'tagline' => $profile->tagline,
-                    'avatar_path' => $profile->avatar_path ? asset('storage/'.$profile->avatar_path) : null,
+                    'avatar_path' => PortfolioMedia::url($profile->avatar_path),
                     'email' => $profile->email,
                     'schedule_url' => $profile->schedule_url,
                     'community_url' => $profile->community_url,
@@ -67,7 +67,7 @@ class WelcomeController extends Controller
                 'education' => $educationData,
                 'beyond_screen' => PortfolioSection::getContent('beyond_screen', 'When I step away from the tech world, I focus on Muay Thai, the gym, dance, and travel to fuel my creativity and well-being, ensuring I return to my projects with fresh energy and perspective.'),
                 'beyond_screen_images' => array_map(
-                    fn ($path) => Storage::disk('public')->url($path),
+                    fn ($path) => PortfolioMedia::url($path) ?? '',
                     (PortfolioSection::getData('beyond_screen') ?? [])['images'] ?? [],
                 ),
                 'contact_intro' => PortfolioSection::getContent('contact_intro', 'Available for UI/UX and WordPress freelance projects, with added support in SEO, Google Search Console (GSC), Google My Business (GMB), and email campaigns.'),
@@ -83,14 +83,14 @@ class WelcomeController extends Controller
                     'description' => $p->description,
                     'action' => $p->action_label ?? $p->url,
                     'href' => $p->url ?? '#',
-                    'image' => $p->image_path ? Storage::disk('public')->url($p->image_path) : null,
+                    'image' => PortfolioMedia::url($p->image_path),
                 ])->values()->all(),
                 'certifications' => PortfolioCertification::all()->map(fn ($c) => [
                     'id' => $c->id,
                     'name' => $c->name,
                     'issuer' => $c->issuer,
                     'year' => $c->year,
-                    'image' => $c->image_path ? asset('storage/'.$c->image_path) : null,
+                    'image' => PortfolioMedia::url($c->image_path),
                 ])->values()->all(),
                 'recommendations' => PortfolioRecommendation::all()->map(fn ($r) => [
                     'id' => $r->id,
@@ -132,7 +132,7 @@ class WelcomeController extends Controller
             'description' => $p->description,
             'action' => $p->action_label ?? $p->url,
             'href' => $p->url ?? '#',
-            'image' => $p->image_path ? Storage::disk('public')->url($p->image_path) : null,
+            'image' => PortfolioMedia::url($p->image_path),
         ])->values()->all();
 
         return Inertia::render('projects', [

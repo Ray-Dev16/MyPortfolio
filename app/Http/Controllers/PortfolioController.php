@@ -9,9 +9,9 @@ use App\Models\PortfolioProject;
 use App\Models\PortfolioRecommendation;
 use App\Models\PortfolioSection;
 use App\Models\PortfolioSkill;
+use App\Support\PortfolioMedia;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -45,7 +45,7 @@ class PortfolioController extends Controller
                 'location' => $profile->location,
                 'tagline' => $profile->tagline,
                 'avatar_path' => $profile->avatar_path,
-                'avatar_url' => $profile->avatar_path ? Storage::disk('public')->url($profile->avatar_path) : null,
+                'avatar_url' => PortfolioMedia::url($profile->avatar_path),
                 'email' => $profile->email,
                 'schedule_url' => $profile->schedule_url,
                 'community_url' => $profile->community_url,
@@ -75,10 +75,10 @@ class PortfolioController extends Controller
         ]);
         $profile = PortfolioProfile::singleton();
         if ($request->hasFile('avatar')) {
-            if ($profile->avatar_path && Storage::disk('public')->exists($profile->avatar_path)) {
-                Storage::disk('public')->delete($profile->avatar_path);
+            if ($profile->avatar_path && PortfolioMedia::exists($profile->avatar_path)) {
+                PortfolioMedia::delete($profile->avatar_path);
             }
-            $validated['avatar_path'] = $request->file('avatar')->store('portfolio/avatars', 'public');
+            $validated['avatar_path'] = PortfolioMedia::storeImage($request->file('avatar'), 'portfolio/avatars');
         }
         unset($validated['avatar']);
         $profile->update($validated);
@@ -176,7 +176,7 @@ class PortfolioController extends Controller
             $data = $section->data ?? [];
             $paths = $data['images'] ?? [];
             $payload['images'] = array_map(
-                fn ($path) => Storage::disk('public')->url($path),
+                fn ($path) => PortfolioMedia::url($path) ?? '',
                 is_array($paths) ? $paths : [],
             );
         }
@@ -204,10 +204,10 @@ class PortfolioController extends Controller
             $newPaths = [];
             for ($i = 0; $i < 4; $i++) {
                 if (isset($uploads[$i])) {
-                    if (isset($imagePaths[$i]) && Storage::disk('public')->exists($imagePaths[$i])) {
-                        Storage::disk('public')->delete($imagePaths[$i]);
+                    if (isset($imagePaths[$i]) && PortfolioMedia::exists($imagePaths[$i])) {
+                        PortfolioMedia::delete($imagePaths[$i]);
                     }
-                    $newPaths[$i] = $uploads[$i]->store('portfolio/beyond_screen', 'public');
+                    $newPaths[$i] = PortfolioMedia::storeImage($uploads[$i], 'portfolio/beyond_screen');
                 } elseif (isset($imagePaths[$i])) {
                     $newPaths[$i] = $imagePaths[$i];
                 }
@@ -357,7 +357,7 @@ class PortfolioController extends Controller
                 'action_label' => $p->action_label,
                 'url' => $p->url,
                 'image_path' => $p->image_path,
-                'image_url' => $p->image_path ? asset('storage/'.$p->image_path) : null,
+                'image_url' => PortfolioMedia::url($p->image_path),
             ])->values()->all(),
         ]);
     }
@@ -373,7 +373,7 @@ class PortfolioController extends Controller
         ]);
         $validated['sort_order'] = PortfolioProject::max('sort_order') + 1;
         if ($request->hasFile('image')) {
-            $validated['image_path'] = $request->file('image')->store('portfolio/projects', 'public');
+            $validated['image_path'] = PortfolioMedia::storeImage($request->file('image'), 'portfolio/projects');
         }
         unset($validated['image']);
         PortfolioProject::create($validated);
@@ -392,10 +392,10 @@ class PortfolioController extends Controller
             'image' => 'nullable|image|mimes:jpeg,png,jpg,webp,gif|max:2048',
         ]);
         if ($request->hasFile('image')) {
-            if ($model->image_path && Storage::disk('public')->exists($model->image_path)) {
-                Storage::disk('public')->delete($model->image_path);
+            if ($model->image_path && PortfolioMedia::exists($model->image_path)) {
+                PortfolioMedia::delete($model->image_path);
             }
-            $validated['image_path'] = $request->file('image')->store('portfolio/projects', 'public');
+            $validated['image_path'] = PortfolioMedia::storeImage($request->file('image'), 'portfolio/projects');
         }
         unset($validated['image']);
         $model->update($validated);
@@ -421,7 +421,7 @@ class PortfolioController extends Controller
                 'issuer' => $c->issuer,
                 'year' => $c->year,
                 'image_path' => $c->image_path,
-                'image_url' => $c->image_path ? asset('storage/'.$c->image_path) : null,
+                'image_url' => PortfolioMedia::url($c->image_path),
                 'sort_order' => $c->sort_order,
             ])->values()->all(),
         ]);
@@ -437,7 +437,7 @@ class PortfolioController extends Controller
         ]);
         $validated['sort_order'] = PortfolioCertification::max('sort_order') + 1;
         if ($request->hasFile('image')) {
-            $validated['image_path'] = $request->file('image')->store('portfolio/certifications', 'public');
+            $validated['image_path'] = PortfolioMedia::storeImage($request->file('image'), 'portfolio/certifications');
         }
         unset($validated['image']);
         PortfolioCertification::create($validated);
@@ -455,10 +455,10 @@ class PortfolioController extends Controller
             'image' => 'nullable|image|mimes:jpeg,png,jpg,webp,gif|max:2048',
         ]);
         if ($request->hasFile('image')) {
-            if ($model->image_path && Storage::disk('public')->exists($model->image_path)) {
-                Storage::disk('public')->delete($model->image_path);
+            if ($model->image_path && PortfolioMedia::exists($model->image_path)) {
+                PortfolioMedia::delete($model->image_path);
             }
-            $validated['image_path'] = $request->file('image')->store('portfolio/certifications', 'public');
+            $validated['image_path'] = PortfolioMedia::storeImage($request->file('image'), 'portfolio/certifications');
         }
         unset($validated['image']);
         $model->update($validated);
