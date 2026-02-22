@@ -44,6 +44,7 @@ On Render, the Vite build will skip running the PHP command (because `RENDER=tru
 
 ## After a successful deploy
 
+- In Render **Environment**, set **APP_URL** to your service URL (e.g. `https://your-service-name.onrender.com`). This avoids "Invalid URI: Host is malformed" when the app builds URLs behind Render’s proxy.
 - Run migrations once (e.g. via Render **Shell**):  
   `php artisan migrate --force`
 - Open your app URL and test the portfolio and login (`/login-0416`).

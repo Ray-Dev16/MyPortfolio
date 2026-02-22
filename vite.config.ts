@@ -25,13 +25,23 @@ export default defineConfig({
         },
     },
     plugins: [
-        // Fix absolute /resources/js/... paths so they resolve in Docker (Vite may resolve @ to /resources/js in some contexts).
+        // Fix absolute /resources/js/... paths and extensionless resolution (Vite may pass path without extension at load time).
         {
             name: 'resolve-resources-js-absolute',
             resolveId(id) {
                 if (id.startsWith('/resources/js/')) {
                     const file = path.join(projectRoot, id.slice(1));
                     return resolveWithExtension(file) ?? file;
+                }
+                return null;
+            },
+            load(id) {
+                const underResources = id.startsWith(projectRoot + path.sep) && id.includes(path.sep + 'resources' + path.sep + 'js' + path.sep);
+                if (underResources && !fs.existsSync(id)) {
+                    const withExt = resolveWithExtension(id);
+                    if (withExt) {
+                        return fs.readFileSync(withExt, 'utf-8');
+                    }
                 }
                 return null;
             },

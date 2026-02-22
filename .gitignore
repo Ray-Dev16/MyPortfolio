@@ -6,8 +6,8 @@
 /public/storage
 /storage/*.key
 /storage/pail
-/resources/js/actions
-# Committed so Render Node build works when PHP isn't available (or use Docker):
+# Committed so Docker/Render build has actions and routes when wayfinder runs after COPY (or skip PHP):
+# /resources/js/actions
 # /resources/js/routes
 # /resources/js/wayfinder
 /vendor
