@@ -84,4 +84,4 @@ To use PostgreSQL by setting individual env vars (no `DATABASE_URL`), add these 
 | **DB_USERNAME**  | Your DB user         | Yes      |
 | **DB_PASSWORD**  | Your DB password     | Yes      |
 
-Use the real host, database name, username, and password from your Postgres provider (e.g. Render Postgres “Internal Database URL” or your own server). After saving, redeploy so the app uses PostgreSQL.
+Use the real host, database name, username, and password from your Postgres provider (e.g. Render Postgres “Internal Database URL” or your own server). Copy **DB_HOST** exactly from Render Postgres → Connections (one wrong character causes 500). After saving, redeploy so the app uses PostgreSQL.
